@@ -120,7 +120,8 @@ nav img.ise-logo {
   background-color: #990000;
 }
 
-.interview-card {
+
+HEAD.interview-card {
       background: white;
       border-radius: 12px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
@@ -128,3 +129,27 @@ nav img.ise-logo {
       margin-bottom: 16px;
       color: #333333;
     }
+
+.description {
+  display: none;
+  margin-top: 10px;
+}
+
+.description.visible {
+  display: block;
+}
+
+.toggle-description {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  transform: rotate(0deg);
+  transition: transform 0.3s;
+}
+
+.toggle-description.rotated {
+  transform: rotate(90deg);
+}
+

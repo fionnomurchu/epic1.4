@@ -93,9 +93,10 @@ function initializeList() {
 }
 
 function toggleDescription(button, description) {
-  description.classList.toggle('visible');
-  button.classList.toggle('rotated');
+  const isVisible = description.classList.toggle('visible');
+  button.classList.toggle('rotated', isVisible);
 }
+
 
 function updatePositions(changedInput) {
   errorMessage.style.display = 'none';
