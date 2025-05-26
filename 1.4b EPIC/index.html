@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ISE Residency Login</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <h1>ISE Residency Login</h1>
+  <form id="login-form">
+    <label for="role">Role:</label>
+    <select id="role">
+      <option value="student">Select Role</option>
+      <option value="student">Student</option>
+      <option value="company">Company</option>
+    </select>
+    <label for="email">Email:</label>
+    <input type="email" id="email" placeholder="Email" required />
+    <label for="password">Password:</label>
+    <input type="password" id="password" placeholder="Password" required />
+    <button type="submit">Login</button>
+  </form>
+  <h2>Register</h2>
+<form id="register-form">
+  <label for="reg-role">Role:</label>
+  <select id="reg-role">
+    <option value="student">Select Role</option>
+    <option value="student">Student</option>
+    <option value="company">Company</option>
+  </select>
+  <div id="student-fields" style="display: none;">
+    <label>Name: <input type="text" id="student-name" /></label>
+    <label>Student ID: <input type="text" id="student-id" /></label>
+    <label>Year: <input type="text" id="student-year" /></label>
+    <label>Email: <input type="email" id="student-email" /></label>
+    <label>Password: <input type="password" id="student-password" /></label>
+  </div>
+  <div id="company-fields" style="display: none;">
+    <label>Company Name: <input type="text" id="company-name" /></label>
+    <label>Email: <input type="email" id="company-email" /></label>
+    <label>Password: <input type="password" id="company-password" /></label>
+  </div>
+  <button type="submit">Register</button>
+</form>
+  <script type="module" src="main.js"></script>
+</body>
+</html>

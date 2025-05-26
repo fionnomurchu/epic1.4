@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Company Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <nav>
+      <img src="images/ise_logo.jpeg" alt="ISE Logo" class="ise-logo" />
+      <a href="company.html">Dashboard</a> |
+      <a href="company_job_board.html">Job Board</a> |
+      <a href="add_job.html">Add a Job</a> |
+      <a href="messages.html">Messages</a> |
+      <a href="offers.html">Offers</a> |
+      <button id="logout">Log-out</button>
+    </nav>
+  </header>
+  <h1>Welcome to your company dashboard</h1>
+  <script type="module" src="company.js"></script>
+  <script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+  const supabase = createClient('https://arzbecskqesqesfgmkgu.supabase.co', 'your-key');
+  document.getElementById('logout').addEventListener('click', async () => {
+    await supabase.auth.signOut();
+    localStorage.clear();
+    window.location.href = 'index.html';
+  });
+</script>
+</body>
+</html>

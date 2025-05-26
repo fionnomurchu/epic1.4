@@ -1,0 +1,121 @@
+body {
+  background-color: rgba(11,16,32,1);
+  color: white;
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+h1 {
+  color: rgba(32,141,79,1);
+}
+form {
+  background-color: rgba(30,122,76,1);
+  padding: 20px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+label {
+  display: block;
+  margin-top: 10px;
+}
+input, select, textarea {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border: none;
+  border-radius: 3px;
+}
+button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background-color: rgba(32,141,79,1);
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+button:hover {
+  background-color: rgba(30,122,76,1);
+}
+header nav {
+  background-color: #1e7a4c;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+header nav a, header nav button {
+  color: white;
+  margin-right: 10px;
+  text-decoration: none;
+}
+.alert {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(32, 141, 79, 0.95); /* Green */
+  color: white;
+  padding: 1em 2em;
+  border-radius: 10px;
+  font-weight: bold;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  animation: fadeInOut 5s ease-in-out forwards;
+}
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+  10% { opacity: 1; transform: translateX(-50%) translateY(0); }
+  90% { opacity: 1; transform: translateX(-50%) translateY(0); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+}
+.job-section {
+  margin: 40px auto;
+  max-width: 1000px;
+  padding: 0 20px;
+}
+.job-section h2 {
+  color: rgba(32, 141, 79, 1);
+  text-align: center;
+  margin-bottom: 20px;
+}
+.job-section-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+.job-card {
+  background-color: rgba(30, 122, 76, 0.9);
+  color: white;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  width: 1200px;
+  min-height: 100px;
+  transition: transform 0.3s ease;
+}
+nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+nav img.ise-logo {
+  height: 40px;
+  margin-right: 10px;
+}
+.button-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+}
+.delete-button {
+  background-color: #cc0000;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.delete-button:hover {
+  background-color: #990000;
+}
