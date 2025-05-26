@@ -1,10 +1,36 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <title>title</title>
+  <meta charset="UTF-8" />
+  <title>Company Ranking Application</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-    
+  <header>
+    <nav>
+      <img src="images/ise_logo.jpeg" alt="ISE Logo" class="ise-logo" />
+      <a href="student.html">Dashboard</a> |
+      <a href="student_job_board.html">Job Board</a> |
+      <a href="ranking.html">Ranking</a> |
+      <a href="offers.html">Offers</a> |
+      <a href="messages.html">Messages</a> |
+      <button id="logout">Log-out</button>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Company Ranking Application</h1>
+    <div class="instructions">
+      <p><strong>How to use:</strong> Enter a unique rank number (1, 2, 3, etc.) next to each company name. Each rank can only be assigned to one company. Click the arrow to view company descriptions.</p>
+    </div>
+    <div class="error-message" id="errorMessage"></div>
+    <div class="name-list" id="nameList"></div>
+    <div class="assigned-positions">
+      <h2>Current Rankings</h2>
+      <div id="positionList">No rankings assigned yet</div>
+    </div>
+  </main>
+
+  <script type="module" src="ranking.js"></script>
 </body>
 </html>
