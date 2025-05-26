@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Job Board</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <nav>
+      <img src="images/ise_logo.jpeg" alt="ISE Logo" class="ise-logo" />
+      <a href="admin.html">Dashboard</a> 
+      <a href="admin_jobs.html">Manage Jobs</a> 
+      <a href="admin_algorithm.html">Run Algorithm</a> 
+      <a href="messages.html">Messages</a> 
+      <button id="logout">Logout</button>
+    </nav>
+  </header>
+
+  <main class="inbox-container">
+    <h1>All Residency Job Listings</h1>
+
+    <form id="admin-job-form">
+  <h2>Add a Job</h2>
+  <select id="company-select" required>
+    <option value="">Select Company</option>
+  </select>
+  <input type="text" id="title" placeholder="Title" required />
+  <textarea id="description" placeholder="Description" required></textarea>
+  <input type="text" id="residency_number" placeholder="Residency Number (e.g., R1)" />
+  <input type="text" id="location" placeholder="Location" />
+  <input type="number" id="monthly_salary" placeholder="Monthly Salary" />
+  <input type="text" id="accommodation_support" placeholder="Accommodation Support" />
+  <input type="text" id="special_conditions" placeholder="Special Conditions" />
+  <button type="submit">Add Job</button>
+</form>
+    <hr />
+
+    <div id="admin-job-list"></div>
+  </main>
+
+  <script type="module" src="admin_jobs.js"></script>
+</body>
+</html>

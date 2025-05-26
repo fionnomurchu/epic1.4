@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <nav>
+      <img src="images/ise_logo.jpeg" alt="ISE Logo" class="ise-logo" />
+      <a href="admin.html">Dashboard</a> |
+      <a href="admin_jobs.html">Manage Jobs</a> |
+      <a href="admin_algorithm.html">Run Algorithm</a> |
+      <a href="messages.html">Messages</a> |
+      <button id="logout">Log-out</button>
+    </nav>
+  </header>
+  <h1>Welcome to your admin dashboard</h1>
+  <script type="module" src=".js"></script>
+  <script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+  const supabase = createClient('https://arzbecskqesqesfgmkgu.supabase.co', 'your-key');
+  document.getElementById('logout').addEventListener('click', async () => {
+    await supabase.auth.signOut();
+    localStorage.clear();
+    window.location.href = 'index.html';
+  });
+</script>
+</body>
+</html>
