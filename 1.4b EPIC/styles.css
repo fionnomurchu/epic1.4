@@ -129,6 +129,47 @@ HEAD.interview-card {
       margin-bottom: 16px;
       color: #333333;
     }
+    .intro-timeline {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 50px;
+  padding: 40px 20px 20px 60px;
+  flex-wrap: wrap;
+}
+.dashboard-intro {
+  flex: 1 1 55%;
+  font-size: 1.15rem;
+  min-width: 320px;
+  line-height: 1.8;
+  color: white;
+}
+.dashboard-intro h2 {
+  font-size: 1.8rem;
+  margin-bottom: 15px;
+}
+.dashboard-intro li {
+  margin: 10px 0;
+}
+.timeline-image {
+  flex: 1 1 40%;
+  min-width: 280px;
+}
+.timeline-image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+.pdf-embed {
+  margin: 40px auto;
+  text-align: center;
+}
+.pdf-embed h3 {
+  font-size: 1.6rem;
+  margin-bottom: 15px;
+  color: white;
+}
 
 .description {
   display: none;
