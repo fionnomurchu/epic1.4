@@ -7,6 +7,7 @@
 </head>
 <body>
   <h1>ISE Residency Login</h1>
+  <h2>Login</h2>
   <form id="login-form">
     <label for="role">Role:</label>
     <select id="role">
@@ -30,10 +31,10 @@
     <option value="company">Company</option>
   </select>
   <div id="student-fields" style="display: none;">
-    <label>Name: <input type="text" id="student-name" /></label>
+    <label>Name: <input type="text" id="student-name" placeholder="First + Last name"/></label>
     <label>Student ID: <input type="text" id="student-id" /></label>
-    <label>Year: <input type="text" id="student-year" /></label>
-    <label>Email: <input type="email" id="student-email" /></label>
+    <label>Year: <input type="text" id="student-year" placeholder="e.g. 1st" /></label>
+    <label>Email: <input type="email" id="student-email" placeholder="example@studentmail.ul.ie"/></label>
     <label>Password: <input type="password" id="student-password" /></label>
   </div>
   <div id="company-fields" style="display: none;">

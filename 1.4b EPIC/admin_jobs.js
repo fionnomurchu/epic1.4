@@ -22,7 +22,8 @@ jobForm?.addEventListener('submit', async (e) => {
     location: document.getElementById('location').value.trim(),
     monthly_salary: parseFloat(document.getElementById('monthly_salary').value) || null,
     accommodation_support: document.getElementById('accommodation_support').value.trim(),
-    special_conditions: document.getElementById('special_conditions').value.trim()
+    special_conditions: document.getElementById('special_conditions').value.trim(),
+    number_of_positions: parseInt(document.getElementById('number_of_positions').value) || 1
   };
 
   const { error } = await supabase.from('jobs').insert(job);
@@ -87,7 +88,7 @@ async function loadJobs() {
   jobList.innerHTML = '';
   renderSection('Residency R1 Jobs', grouped.R1);
   renderSection('Residency R1 + R2 Jobs', grouped.R1R2);
-  renderSection('Residency R2 Jobs', grouped.R2); 
+  renderSection('Residency R2 Jobs', grouped.R2);
   renderSection('Residency R3 Jobs', grouped.R3);
   renderSection('Residency R4 Jobs', grouped.R4);
   renderSection('Residency R5 Jobs', grouped.R5);
@@ -115,6 +116,7 @@ function renderSection(title, jobs) {
       <label>Salary: <input name="monthly_salary" type="number" value="${job.monthly_salary || ''}" /></label>
       <label>Accommodation: <input name="accommodation_support" value="${job.accommodation_support || ''}" /></label>
       <label>Special Conditions: <input name="special_conditions" value="${job.special_conditions || ''}" /></label>
+      <label>No. of Positions: <input name="number_of_positions" type="number" min="1" value="${job.number_of_positions || 1}" /></label>
       <div class="button-row">
         <button type="submit">Save</button>
         <button type="button" class="delete-job">Remove</button>
@@ -131,9 +133,10 @@ function renderSection(title, jobs) {
         description: formData.get('description'),
         residency_number: formData.get('residency_number'),
         location: formData.get('location'),
-        monthly_salary: parseFloat(formData.get('monthly_salary')),
+        monthly_salary: parseFloat(formData.get('monthly_salary')) || null,
         accommodation_support: formData.get('accommodation_support'),
         special_conditions: formData.get('special_conditions'),
+        number_of_positions: parseInt(formData.get('number_of_positions')) || 1
       };
 
       const { error } = await supabase.from('jobs').update(update).eq('id', jobId);
