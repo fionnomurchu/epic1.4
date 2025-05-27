@@ -35,7 +35,7 @@ jobForm.addEventListener('submit', async (e) => {
   const { error } = await supabase.from('jobs').insert(job);
 
   if (error) {
-    alertStyled('❌ Error adding job: ' + error.message);
+    alertStyled('Error adding job: ' + error.message);
     return;
   }
 
