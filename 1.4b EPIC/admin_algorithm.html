@@ -16,9 +16,18 @@
       <button id="logout">Log-out</button>
     </nav>
   </header>
-
   <main class="inbox-container">
     <h1>Run Residency Allocation Algorithm</h1>
+  <label for="residency-filter">Select Residency Group:</label>
+  <select id="residency-filter">
+    <option value="please select">Please Select</option>
+    <option value="R1, R1+R2">R1 and R1+R2</option>
+    <option value="R2">R2</option>
+    <option value="R3">R3</option>
+    <option value="R4">R4</option>
+    <option value="R5">R5</option>
+  </select>
+
     <button id="run-algo">Begin Algorithm</button>
     <p id="algo-status"></p>
   </main>
