@@ -274,16 +274,49 @@ document.getElementById('submitRankingBtn').addEventListener('click', async () =
 
   const { data, error } = await supabase
     .from('ranking')
-    .insert([payload]);
-
+    .insert([payload])
+    .select('id')   // This tells Supabase to return the `id` field
+    .single();      // This ensures you get a single object instead of an array
   if (error) {
     showError('Error submitting rankings: ' + error.message);
   } else {
+      const insertedRankingId = data.id;
+    console.log('Inserted ranking ID:', insertedRankingId);
+    await updateStudentRankingId(insertedRankingId);
     alert('Rankings submitted successfully!');
   }
+
+
+
 });
 
 window.onload = async () => {
   await fetchResidencies();
 };
 
+
+
+async function updateStudentRankingId(rankingId) {
+  const {
+    data: { user },
+    error: authError
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    showError('No logged-in user found.');
+    return;
+  }
+  console.log("User email:", user.email);
+
+
+  const { error } = await supabase
+    .from('students')
+    .update({ rank_id: rankingId })
+    .eq('email', user.email); // Match on email instead of user ID
+
+  if (error) {
+    showError('Failed to update student ranking ID: ' + error.message);
+  } else {
+    console.log('Student ranking ID updated successfully');
+  }
+}
