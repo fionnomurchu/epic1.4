@@ -239,13 +239,20 @@ async function fetchJobsByResidency(residency) {
 
 document.getElementById('submitRankingBtn').addEventListener('click', async () => {
   const ranks = [];
+  let residencyValue = null;
+
   document.querySelectorAll('#positionList .position-item').forEach((item, index) => {
     const title = item.getAttribute('data-job-title');
     const residency = item.getAttribute('data-residency');
-    if (title && residency) {
-      ranks[index] = `${title}`;
+
+    if (title) {
+      ranks[index] = title;
     } else {
       ranks[index] = null;
+    }
+
+    if (index === 0 && residency) {
+      residencyValue = residency;
     }
   });
 
@@ -259,6 +266,7 @@ document.getElementById('submitRankingBtn').addEventListener('click', async () =
     rank7: ranks[6] || null,
     rank8: ranks[7] || null,
     rank9: ranks[8] || null,
+    residency: residencyValue || null
   };
 
   console.log("Submitting payload:", payload);
