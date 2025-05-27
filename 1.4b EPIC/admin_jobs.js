@@ -86,12 +86,12 @@ async function loadJobs() {
   });
 
   jobList.innerHTML = '';
-  renderSection('Residency R1 Jobs', grouped.R1);
-  renderSection('Residency R1 + R2 Jobs', grouped.R1R2);
-  renderSection('Residency R2 Jobs', grouped.R2);
-  renderSection('Residency R3 Jobs', grouped.R3);
-  renderSection('Residency R4 Jobs', grouped.R4);
-  renderSection('Residency R5 Jobs', grouped.R5);
+  renderSection('Residency 1 Jobs', grouped.R1);
+  renderSection('Residency 1 + 2 Jobs', grouped.R1R2);
+  renderSection('Residency 2 Jobs', grouped.R2);
+  renderSection('Residency 3 Jobs', grouped.R3);
+  renderSection('Residency 4 Jobs', grouped.R4);
+  renderSection('Residency 5 Jobs', grouped.R5);
 }
 
 function renderSection(title, jobs) {

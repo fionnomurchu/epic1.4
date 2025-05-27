@@ -12,7 +12,6 @@
       <a href="company.html">Dashboard</a> 
       <a href="company_job_board.html">Manage your jobs</a> 
       <a href="add_job.html">Add a Job</a> 
-      <a href="messages.html">Messages</a> 
       <a href="company_offers.html">Interviews/Offers</a> 
       <button id="logout">Log-out</button>
     </nav>
@@ -27,7 +26,6 @@
       <li>⭐ <strong>Manage listed jobs</strong> to maintain integrity and relevance</li>
       <li>📅 <strong>View your student interviews</strong> based on student QCA and preferences</li>
       <li>📨 <strong>Send job offers</strong> following interviews</li>
-      <li>💬 <strong>Communicate</strong> with students, staff, and support via messaging</li>
     </ul>
   </div>
 
@@ -39,7 +37,7 @@
   <script type="module" src="company.js"></script>
   <script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-  const supabase = createClient('https://arzbecskqesqesfgmkgu.supabase.co', 'your-key');
+  const supabase = createClient('https://arzbecskqesqesfgmkgu.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyemJlY3NrcWVzcWVzZmdta2d1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc5Mzc3NDcsImV4cCI6MjA2MzUxMzc0N30.j_JklSlOYHuuKEIDdSkgeiemwY1lfNQMk0fRoJfb2pQ');
   document.getElementById('logout').addEventListener('click', async () => {
     await supabase.auth.signOut();
     localStorage.clear();

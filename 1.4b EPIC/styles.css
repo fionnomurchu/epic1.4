@@ -7,11 +7,9 @@ body {
 h1 {
   color: rgba(32,141,79,1);
 }
-
 h3 {
   color: rgba(32,141,79,1);
 }
-
 form {
   background-color: rgba(30,122,76,1);
   padding: 20px;
@@ -124,8 +122,6 @@ nav img.ise-logo {
 .delete-button:hover {
   background-color: #990000;
 }
-
-
 HEAD.interview-card {
       background: white;
       border-radius: 12px;
@@ -175,16 +171,13 @@ HEAD.interview-card {
   margin-bottom: 15px;
   color: white;
 }
-
 .description {
   display: none;
   margin-top: 10px;
 }
-
 .description.visible {
   display: block;
 }
-
 .toggle-description {
   background: none;
   border: none;
@@ -194,20 +187,15 @@ HEAD.interview-card {
   transform: rotate(0deg);
   transition: transform 0.3s;
 }
-
 .toggle-description.rotated {
   transform: rotate(90deg);
 }
-
-/* Input box for rank */
 .position-input {
   width: 60px;
   margin-left: 10px;
   padding: 4px;
   font-size: 1em;
 }
-
-/* Style for job title */
 .name-header {
   display: flex;
   align-items: center;
@@ -216,18 +204,15 @@ HEAD.interview-card {
   width: 100%;
   padding-bottom: 5px;
 }
-
 .title-wrapper {
   flex-grow: 1;
   text-align: center;
 }
-
 .name-text {
   margin: 0;
   font-size: 1.25em;
   color: rgba(32,141,79,1);
 }
-
 #errorMessage {
   display: none;
   background-color: #ffe6e6;  
@@ -238,4 +223,3 @@ HEAD.interview-card {
   border-radius: 6px;
   font-weight: bold;
 }
-

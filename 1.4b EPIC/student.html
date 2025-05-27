@@ -13,7 +13,6 @@
       <a href="student_job_board.html">Job Board</a> 
       <a href="ranking.html">Ranking</a> 
       <a href="student_offers.html">Interviews/Offers</a> 
-      <a href="messages.html">Messages</a> 
       <button id="logout">Log-out</button>
     </nav>
   </header>
@@ -27,7 +26,6 @@
       <li>⭐ <strong>Rank your preferred positions</strong> to express your interests</li>
       <li>📅 <strong>View your allocated interviews</strong> based on QCA and preferences</li>
       <li>📨 <strong>Check job offers</strong> and accept one of your matched residencies</li>
-      <li>💬 <strong>Communicate</strong> with companies, staff, and support via messaging</li>
     </ul>
   </div>
 
@@ -43,7 +41,7 @@
   <script type="module" src="student.js"></script>
   <script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-  const supabase = createClient('https://arzbecskqesqesfgmkgu.supabase.co', 'your-key');
+  const supabase = createClient('https://arzbecskqesqesfgmkgu.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyemJlY3NrcWVzcWVzZmdta2d1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc5Mzc3NDcsImV4cCI6MjA2MzUxMzc0N30.j_JklSlOYHuuKEIDdSkgeiemwY1lfNQMk0fRoJfb2pQ');
   document.getElementById('logout').addEventListener('click', async () => {
     await supabase.auth.signOut();
     localStorage.clear();
