@@ -1,30 +1,27 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-const supabase = createClient('https://arzbecskqesqesfgmkgu.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyemJlY3NrcWVzcWVzZmdta2d1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc5Mzc3NDcsImV4cCI6MjA2MzUxMzc0N30.j_JklSlOYHuuKEIDdSkgeiemwY1lfNQMk0fRoJfb2pQ');
+const supabase = createClient(
+  'https://arzbecskqesqesfgmkgu.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyemJlY3NrcWVzcWVzZmdta2d1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc5Mzc3NDcsImV4cCI6MjA2MzUxMzc0N30.j_JklSlOYHuuKEIDdSkgeiemwY1lfNQMk0fRoJfb2pQ'
+);
 
 const companyId = localStorage.getItem('company_id');
 if (!companyId) window.location.href = 'index.html';
 
 const logoutButton = document.getElementById('logout');
-if (logoutButton) {
-  logoutButton.addEventListener('click', async () => {
-    await supabase.auth.signOut();
-    localStorage.clear();
-    window.location.href = 'index.html';
-  });
-}
+logoutButton?.addEventListener('click', async () => {
+  await supabase.auth.signOut();
+  localStorage.clear();
+  window.location.href = 'index.html';
+});
 
 const jobBoard = document.getElementById('company-job-board');
 
 async function fetchCompanyJobs() {
-  console.log("Company ID:", companyId);
-
   const { data: jobs, error } = await supabase
     .from('jobs')
     .select('*')
     .eq('company_id', companyId);
-
-  console.log("Fetched jobs:", jobs);
 
   jobBoard.innerHTML = '';
 
@@ -51,6 +48,7 @@ async function fetchCompanyJobs() {
       <label>Monthly Salary: <input name="monthly_salary" type="number" value="${job.monthly_salary || ''}" /></label>
       <label>Accommodation Support: <input name="accommodation_support" value="${job.accommodation_support || ''}" /></label>
       <label>Special Conditions: <input name="special_conditions" value="${job.special_conditions || ''}" /></label>
+      <label>No. of Positions: <input name="number_of_positions" type="number" value="${job.number_of_positions || 1}" min="1" required /></label>
       <div class="button-row">
         <button type="submit">Save</button>
         <button type="button" class="delete-button">Remove</button>
@@ -72,9 +70,8 @@ async function fetchCompanyJobs() {
         monthly_salary: parseFloat(formData.get('monthly_salary')) || null,
         accommodation_support: formData.get('accommodation_support'),
         special_conditions: formData.get('special_conditions'),
+        number_of_positions: parseInt(formData.get('number_of_positions')) || 1
       };
-
-      console.log("Updating job ID:", jobId, updates);
 
       const { error } = await supabase
         .from('jobs')
@@ -93,13 +90,12 @@ async function fetchCompanyJobs() {
       if (!confirmed) return;
 
       const jobId = form.dataset.id;
-
       const { error } = await supabase.from('jobs').delete().eq('id', jobId);
 
       if (error) {
-        alertStyled('❌ Error deleting job: ' + error.message);
+        alertStyled('Error deleting job: ' + error.message);
       } else {
-        alertStyled('🗑️ Job deleted');
+        alertStyled('Job deleted');
         fetchCompanyJobs();
       }
     });

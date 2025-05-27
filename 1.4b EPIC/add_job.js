@@ -1,6 +1,10 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-const supabase = createClient('https://arzbecskqesqesfgmkgu.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyemJlY3NrcWVzcWVzZmdta2d1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc5Mzc3NDcsImV4cCI6MjA2MzUxMzc0N30.j_JklSlOYHuuKEIDdSkgeiemwY1lfNQMk0fRoJfb2pQ');
+const supabase = createClient(
+  'https://arzbecskqesqesfgmkgu.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyemJlY3NrcWVzcWVzZmdta2d1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc5Mzc3NDcsImV4cCI6MjA2MzUxMzc0N30.j_JklSlOYHuuKEIDdSkgeiemwY1lfNQMk0fRoJfb2pQ'
+);
+
 const companyId = localStorage.getItem('company_id');
 if (!companyId) window.location.href = 'index.html';
 
@@ -21,6 +25,7 @@ document.getElementById('job-form').addEventListener('submit', async (e) => {
     monthly_salary: parseFloat(document.getElementById('monthly_salary').value) || null,
     accommodation_support: document.getElementById('accommodation_support').value.trim(),
     special_conditions: document.getElementById('special_conditions').value.trim(),
+    number_of_positions: parseInt(document.getElementById('number_of_positions').value),
     company_id: companyId
   };
 

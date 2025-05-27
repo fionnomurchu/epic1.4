@@ -74,6 +74,7 @@ function renderSection(title, jobs) {
       <p><strong>Salary:</strong> €${job.monthly_salary || 'N/A'}</p>
       <p><strong>Accommodation:</strong> ${job.accommodation_support || 'N/A'}</p>
       <p><strong>Special Conditions:</strong> ${job.special_conditions || 'None'}</p>
+      <p><strong>Positions Available:</strong> ${job.number_of_positions || 'N/A'}</p>
       <p>${job.description}</p>
     `;
     wrapper.appendChild(card);
