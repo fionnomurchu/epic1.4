@@ -65,7 +65,7 @@ document.getElementById('login-form')?.addEventListener('submit', async (e) => {
     }
 
     localStorage.setItem('admin_id', admin.id);
-    window.location.href = 'admin_dashboard.html';
+    window.location.href = 'admin.html';
   }
 });
 
