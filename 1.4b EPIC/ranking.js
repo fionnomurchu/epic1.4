@@ -56,9 +56,9 @@ function initializeList() {
 
     toggleBtn.addEventListener('click', () => toggleDescription(toggleBtn, description));
 
-    const nameSpan = document.createElement('span');
-    nameSpan.className = 'name-text';
-    nameSpan.textContent = job.title;
+    const nameHeading = document.createElement('h3');
+    nameHeading.className = 'name-text';
+    nameHeading.textContent = job.title;
 
     const input = document.createElement('input');
     input.type = 'number';
@@ -73,8 +73,12 @@ function initializeList() {
       if (e.key === 'Enter') updatePositions(input);
     });
 
+    const titleWrapper = document.createElement('div');
+    titleWrapper.className = 'title-wrapper';
+    titleWrapper.appendChild(nameHeading);
+
     header.appendChild(toggleBtn);
-    header.appendChild(nameSpan);
+    header.appendChild(nameHeading);
     header.appendChild(input);
 
     item.appendChild(header);
@@ -97,7 +101,6 @@ function toggleDescription(button, description) {
   button.classList.toggle('rotated', isVisible);
 }
 
-
 function updatePositions(changedInput) {
   errorMessage.style.display = 'none';
 
@@ -105,7 +108,6 @@ function updatePositions(changedInput) {
   const name = changedInput.dataset.name;
   const previousValue = changedInput.dataset.previousValue;
 
-  // Remove old assignment if exists
   if (previousValue && assignedPositions.has(parseInt(previousValue))) {
     if (assignedPositions.get(parseInt(previousValue)) === name) {
       assignedPositions.delete(parseInt(previousValue));
