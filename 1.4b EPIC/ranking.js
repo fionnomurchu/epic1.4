@@ -13,6 +13,12 @@ let nameItems = [];
 let assignedPositions = new Map();
 let jobs = [];
 
+document.getElementById('logout').addEventListener('click', async () => {
+  await supabase.auth.signOut();
+  localStorage.clear();
+  window.location.href = 'index.html';
+});
+
 async function fetchJobs() {
   const { data, error } = await supabase.from('jobs').select('*');
 
@@ -193,4 +199,58 @@ function updatePositionDisplay() {
   positionList.innerHTML = html;
 }
 
-window.onload = fetchJobs;
+const residencySelect = document.getElementById('residencySelect');
+
+async function fetchResidencies() {
+  const { data, error } = await supabase
+    .from('jobs')
+    .select('residency_number', { count: 'exact', distinct: true });
+
+  if (error) {
+    showError('Failed to fetch residencies. ' + error.message);
+    return;
+  }
+
+  const uniqueResidencies = [...new Set(data.map(row => row.residency_number))];
+
+  residencySelect.innerHTML = `<option value="">-- Select Residency --</option>`;
+  uniqueResidencies.forEach(res => {
+    if (res) {
+      const option = document.createElement('option');
+      option.value = res;
+      option.textContent = res;
+      residencySelect.appendChild(option);
+    }
+  });
+}
+
+residencySelect.addEventListener('change', () => {
+  const selectedResidency = residencySelect.value;
+  if (selectedResidency) {
+    fetchJobsByResidency(selectedResidency);
+  } else {
+    nameList.innerHTML = '';
+    positionList.innerHTML = '';
+  }
+});
+
+async function fetchJobsByResidency(residency) {
+  const { data, error } = await supabase
+    .from('jobs')
+    .select('*')
+    .eq('residency_number', residency);
+
+  if (error) {
+    showError('Failed to fetch jobs for this residency. ' + error.message);
+    return;
+  }
+
+  jobs = data;
+  initializeList();
+}
+
+
+window.onload = async () => {
+  await fetchResidencies();
+};
+
