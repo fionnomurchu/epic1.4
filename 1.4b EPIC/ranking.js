@@ -8,6 +8,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const nameList = document.getElementById('nameList');
 const errorMessage = document.getElementById('errorMessage');
 const positionList = document.getElementById('positionList');
+const residencySelect = document.getElementById('residencySelect');
 
 let nameItems = [];
 let assignedPositions = new Map();
@@ -21,13 +22,7 @@ document.getElementById('logout').addEventListener('click', async () => {
 
 async function fetchJobs() {
   const { data, error } = await supabase.from('jobs').select('*');
-
-  if (error) {
-    showError('Failed to fetch job data from Supabase. ' + error.message);
-    console.error('Supabase fetch error:', error);
-    return;
-  }
-
+  if (error) return showError('Failed to fetch job data from Supabase. ' + error.message);
   jobs = data;
   initializeList();
 }
@@ -71,6 +66,7 @@ function initializeList() {
     input.className = 'position-input';
     input.placeholder = 'Rank';
     input.dataset.name = job.title;
+    input.dataset.jobId = job.id;
     input.dataset.previousValue = '';
     input.min = "1";
 
@@ -78,10 +74,6 @@ function initializeList() {
     input.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') updatePositions(input);
     });
-
-    const titleWrapper = document.createElement('div');
-    titleWrapper.className = 'title-wrapper';
-    titleWrapper.appendChild(nameHeading);
 
     header.appendChild(toggleBtn);
     header.appendChild(nameHeading);
@@ -95,6 +87,7 @@ function initializeList() {
     nameItems.push({
       element: item,
       name: job.title,
+      id: job.id,
       input,
       description,
       toggleBtn
@@ -109,18 +102,15 @@ function toggleDescription(button, description) {
 
 function updatePositions(changedInput) {
   errorMessage.style.display = 'none';
-
   const newValue = changedInput.value;
-  const name = changedInput.dataset.name;
+  const jobId = changedInput.dataset.jobId;
   const previousValue = changedInput.dataset.previousValue;
 
   if (previousValue && assignedPositions.has(parseInt(previousValue))) {
-    if (assignedPositions.get(parseInt(previousValue)) === name) {
+    if (assignedPositions.get(parseInt(previousValue)) === jobId) {
       assignedPositions.delete(parseInt(previousValue));
       nameItems.forEach(item => {
-        if (item.name === name) {
-          item.element.classList.remove('highlight');
-        }
+        if (item.id === jobId) item.element.classList.remove('highlight');
       });
     }
   }
@@ -138,17 +128,15 @@ function updatePositions(changedInput) {
 
     if (assignedPositions.has(positionNum)) {
       changedInput.value = previousValue || '';
-      showError(`Rank ${positionNum} is already assigned to "${assignedPositions.get(positionNum)}"`);
+      showError(`Rank ${positionNum} is already assigned to another job.`);
       return;
     }
 
-    assignedPositions.set(positionNum, name);
+    assignedPositions.set(positionNum, jobId);
     changedInput.dataset.previousValue = newValue;
 
     nameItems.forEach(item => {
-      if (item.name === name) {
-        item.element.classList.add('highlight');
-      }
+      if (item.id === jobId) item.element.classList.add('highlight');
     });
   } else {
     changedInput.dataset.previousValue = '';
@@ -186,11 +174,14 @@ function updatePositionDisplay() {
   const sortedPositions = Array.from(assignedPositions.entries()).sort((a, b) => a[0] - b[0]);
 
   let html = '<div>';
-  sortedPositions.forEach(([position, name]) => {
-    const job = jobs.find(j => j.title === name);
+  sortedPositions.forEach(([position, jobId]) => {
+    const job = jobs.find(j => j.id === jobId);
     html += `
-      <div class="position-item">
-        <strong>#${position}: ${name}</strong>
+      <div class="position-item" 
+           data-job-id="${jobId}" 
+           data-job-title="${job.title}" 
+           data-residency="${job.residency_number}">
+        <strong>#${position}: ${job.title}</strong>
         <div style="font-size:0.9em; color:#666; margin-top:2px;">${job?.description || ''}</div>
       </div>
     `;
@@ -198,8 +189,6 @@ function updatePositionDisplay() {
   html += '</div>';
   positionList.innerHTML = html;
 }
-
-const residencySelect = document.getElementById('residencySelect');
 
 async function fetchResidencies() {
   const { data, error } = await supabase
@@ -212,7 +201,6 @@ async function fetchResidencies() {
   }
 
   const uniqueResidencies = [...new Set(data.map(row => row.residency_number))];
-
   residencySelect.innerHTML = `<option value="">-- Select Residency --</option>`;
   uniqueResidencies.forEach(res => {
     if (res) {
@@ -249,8 +237,43 @@ async function fetchJobsByResidency(residency) {
   initializeList();
 }
 
+document.getElementById('submitRankingBtn').addEventListener('click', async () => {
+  const ranks = [];
+  document.querySelectorAll('#positionList .position-item').forEach((item, index) => {
+    const title = item.getAttribute('data-job-title');
+    const residency = item.getAttribute('data-residency');
+    if (title && residency) {
+      ranks[index] = `${title}`;
+    } else {
+      ranks[index] = null;
+    }
+  });
+
+  const payload = {
+    rank1: ranks[0] || null,
+    rank2: ranks[1] || null,
+    rank3: ranks[2] || null,
+    rank4: ranks[3] || null,
+    rank5: ranks[4] || null,
+    rank6: ranks[5] || null,
+    rank7: ranks[6] || null,
+    rank8: ranks[7] || null,
+    rank9: ranks[8] || null,
+  };
+
+  console.log("Submitting payload:", payload);
+
+  const { data, error } = await supabase
+    .from('ranking')
+    .insert([payload]);
+
+  if (error) {
+    showError('Error submitting rankings: ' + error.message);
+  } else {
+    alert('Rankings submitted successfully!');
+  }
+});
 
 window.onload = async () => {
   await fetchResidencies();
 };
-
