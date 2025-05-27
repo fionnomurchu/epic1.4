@@ -17,7 +17,23 @@
     </nav>
   </header>
   <h1>Welcome to your admin dashboard</h1>
-  <script type="module" src=".js"></script>
+  <section class="intro-timeline">
+  <div class="dashboard-intro">
+    <h2>Welcome to the ISE Residency Portal</h2>
+    <p>This platform allows you to manage the residency allocation for students. Here, you can:</p>
+    <ul>
+      <li>🔍 <strong>Add personalised job applications</strong> to the Job Board</li>
+      <li>⭐ <strong>Manage listed jobs</strong> to maintain integrity and relevance</li>
+      <li>📨 <strong>Run the algorithm</strong> that automatically allocates residencies to students</li>
+      <li>💬 <strong>Communicate</strong> with students, companies, and support via messaging</li>
+    </ul>
+  </div>
+
+  <div class="timeline-image">
+    <img src="images/residency_timeline.png" alt="Residency Timeline">
+  </div>
+  </section>
+  </script>
   <script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
   const supabase = createClient('https://arzbecskqesqesfgmkgu.supabase.co', 'your-key');
