@@ -6,10 +6,26 @@ const supabase = createClient(supabaseUrl, supabaseKey)
 
 let array = [];
 
+const residencyMap = {
+  "R1, R1+R2": 1,
+  "R2": 1,
+  "R3": 3,
+  "R4": 3,
+  "R5": 4
+};
+
+
 document.getElementById('run-algo').addEventListener('click', async () => {
   document.getElementById('algo-status').textContent = 'Running algorithm...';
+    const select = document.getElementById('residency-filter');
+  const selectedValue = select.value;
+   const year = residencyMap[selectedValue];
+console.log(selectedValue);  
+console.log(year);
+  
+  
   try {
-    await runAlgorithm();
+    await runAlgorithm(selectedValue, year);
     document.getElementById('algo-status').textContent = 'Algorithm completed successfully!';
   } catch (error) {
     document.getElementById('algo-status').textContent = 'An error occurred while running the algorithm.';
@@ -17,17 +33,20 @@ document.getElementById('run-algo').addEventListener('click', async () => {
   }
 });
 
-async function runAlgorithm() {
-  await fetchResidencyTable();
+
+async function runAlgorithm(residency_number, year) {
+  await fetchResidencyTable(residency_number);
+
 
   const { data: students, error } = await supabase
-    .from('student')
+    .from('students')
     .select(`
-      number,
       name,
-      class_ranking,
+      student_id,
+      classRank,
       ranking:rank_id(*)
-    `);
+    `)
+    .eq('year',year);
 
 if (error) {
   throw new Error('Error fetching students: ' + error.message);
@@ -37,17 +56,18 @@ if (error) {
   }
 }
 
-async function fetchResidencyTable() {
+async function fetchResidencyTable(residency_number) {
   const { data, error } = await supabase
     .from('jobs')
-    .select('*');
+    .select('*')
+    .eq('residency_number', residency_number);
 
   if (error) {
     console.error('Error fetching residencies:', error);
     return;
   }
 
-  array = data.map(row => [row.id, row.title, row.residency_number, row.number_of_positions]);
+  array = data.map(row => [row.id, row.title, row.residency_number, row.number_of_positions,0]);
   console.log('Residency table fetched:', array);
 }
 
@@ -65,17 +85,23 @@ async function processStudent(student) {
   for (let i = 1; alloc_count < 3; i++) {
     const rankKey = `rank${i}`;
     const residency = student.ranking[rankKey];
+    console.log(`Processing student: ${student.name}, Residency: ${residency}`);
     if (!residency) continue;
 
     const exists = residencyExists(residency);
+    console.log(`Residency exists: ${exists}`);
     if (!exists) continue;
 
+
+    //problem here
     const index = residencyIndex(residency);
-    array[index][3] += 1;
-    const count = array[index][3];
+    array[index][4] += 1;
+    const count = array[index][4];
+    console.log(`Current count for ${residency}: ${count}`);
 
     if (count <= 3) {
-      await manipulate('allocations1', student.number, residency);
+      console.log('manipulating')
+      await manipulate('interview', student.student_id, residency);
       alloc_count++;
     }
   }
@@ -84,11 +110,11 @@ async function processStudent(student) {
 async function manipulate(table, studentnum, res) {
   const exists = await attributeExists(table, 'id', studentnum);
   if (exists) {
-    const isNull = await isAttributeNull(table, 'id', studentnum, 'allo2');
+    const isNull = await isAttributeNull(table, 'id', studentnum, 'interview2');
     if (isNull) {
-      await updateAttribute(table, 'id', studentnum, 'allo2', res);
+      await updateAttribute(table, 'id', studentnum, 'interview2', res);
     } else {
-      await updateAttribute(table, 'id', studentnum, 'allo3', res);
+      await updateAttribute(table, 'id', studentnum, 'interview3', res);
     }
   } else {
     await addEntity(table, studentnum, res);
@@ -128,7 +154,7 @@ async function isAttributeNull(table, key, value, attribute) {
 async function addEntity(table, id, allo1Value) {
   const { data, error } = await supabase
     .from(table)
-    .insert([{ id: id, allo1: allo1Value }]);
+    .insert([{ id: id, interview1: allo1Value }]);
 
   if (error) {
     console.error('Insert error:', error);
