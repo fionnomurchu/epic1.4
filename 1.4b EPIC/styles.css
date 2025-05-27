@@ -228,4 +228,15 @@ HEAD.interview-card {
   color: rgba(32,141,79,1);
 }
 
+#errorMessage {
+  display: none;
+  background-color: #ffe6e6;  
+  color: #cc0000;                 
+  border: 1px solid #cc0000;
+  padding: 10px 15px;
+  margin: 15px 0;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
 
