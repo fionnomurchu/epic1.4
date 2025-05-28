@@ -111,7 +111,17 @@ function renderSection(title, jobs) {
     jobCard.innerHTML = `
       <label>Title: <input name="title" value="${job.title}" required /></label>
       <label>Description: <textarea name="description">${job.description}</textarea></label>
-      <label>Residency: <input name="residency_number" value="${job.residency_number || ''}" /></label>
+      <label>Residency Number: 
+      <select name="residency_number" required>
+      <option value="">-- Select Residency --</option>
+      <option value="R1" ${job.residency_number === "R1" ? "selected" : ""}>Residency 1</option>
+      <option value="R1+R2" ${job.residency_number === "R1+R2" ? "selected" : ""}>Residency 1 + 2</option>
+      <option value="R2" ${job.residency_number === "R2" ? "selected" : ""}>Residency 2</option>
+      <option value="R3" ${job.residency_number === "R3" ? "selected" : ""}>Residency 3</option>
+      <option value="R4" ${job.residency_number === "R4" ? "selected" : ""}>Residency 4</option>
+      <option value="R5" ${job.residency_number === "R5" ? "selected" : ""}>Residency 5</option>
+      </select>
+      </label>
       <label>Location: <input name="location" value="${job.location || ''}" /></label>
       <label>Salary: <input name="monthly_salary" type="number" value="${job.monthly_salary || ''}" /></label>
       <label>Accommodation: <input name="accommodation_support" value="${job.accommodation_support || ''}" /></label>

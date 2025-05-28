@@ -1,4 +1,3 @@
-
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
 const SUPABASE_URL = "https://arzbecskqesqesfgmkgu.supabase.co";
@@ -14,6 +13,11 @@ const residencySelect = document.getElementById('residencySelect');
 let nameItems = [];
 let assignedPositions = new Map();
 let jobs = [];
+
+const groupedResidency = (res) => {
+  const norm = res?.replace(/\s+/g, '').toUpperCase();
+  return (norm === 'R1' || norm === 'R1+R2' || norm === 'R2+R1') ? 'R1GROUP' : norm;
+};
 
 document.getElementById('logout').addEventListener('click', async () => {
   await supabase.auth.signOut();
@@ -89,6 +93,7 @@ function initializeList() {
       element: item,
       name: job.title,
       id: job.id,
+      residency: groupedResidency(job.residency_number),
       input,
       description,
       toggleBtn
@@ -201,13 +206,13 @@ async function fetchResidencies() {
     return;
   }
 
-  const uniqueResidencies = [...new Set(data.map(row => row.residency_number))];
+  const uniqueResidencies = [...new Set(data.map(row => groupedResidency(row.residency_number)))];
   residencySelect.innerHTML = `<option value="">-- Select Residency --</option>`;
   uniqueResidencies.forEach(res => {
     if (res) {
       const option = document.createElement('option');
       option.value = res;
-      option.textContent = res;
+      option.textContent = res === 'R1GROUP' ? 'R1 + R1+R2' : res;
       residencySelect.appendChild(option);
     }
   });
@@ -224,17 +229,9 @@ residencySelect.addEventListener('change', () => {
 });
 
 async function fetchJobsByResidency(residency) {
-  const { data, error } = await supabase
-    .from('jobs')
-    .select('*')
-    .eq('residency_number', residency);
-
-  if (error) {
-    showError('Failed to fetch jobs for this residency. ' + error.message);
-    return;
-  }
-
-  jobs = data;
+  const all = await supabase.from('jobs').select('*');
+  if (all.error) return showError(all.error.message);
+  jobs = all.data.filter(job => groupedResidency(job.residency_number) === residency);
   initializeList();
 }
 
@@ -275,26 +272,22 @@ document.getElementById('submitRankingBtn').addEventListener('click', async () =
   const { data, error } = await supabase
     .from('ranking')
     .insert([payload])
-    .select('id')   // This tells Supabase to return the `id` field
-    .single();      // This ensures you get a single object instead of an array
+    .select('id')
+    .single();
+
   if (error) {
     showError('Error submitting rankings: ' + error.message);
   } else {
-      const insertedRankingId = data.id;
+    const insertedRankingId = data.id;
     console.log('Inserted ranking ID:', insertedRankingId);
     await updateStudentRankingId(insertedRankingId);
     alert('Rankings submitted successfully!');
   }
-
-
-
 });
 
 window.onload = async () => {
   await fetchResidencies();
 };
-
-
 
 async function updateStudentRankingId(rankingId) {
   const {
@@ -308,11 +301,10 @@ async function updateStudentRankingId(rankingId) {
   }
   console.log("User email:", user.email);
 
-
   const { error } = await supabase
     .from('students')
     .update({ rank_id: rankingId })
-    .eq('email', user.email); // Match on email instead of user ID
+    .eq('email', user.email);
 
   if (error) {
     showError('Failed to update student ranking ID: ' + error.message);

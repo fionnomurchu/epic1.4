@@ -26,7 +26,16 @@
   </select>
   <input type="text" id="title" placeholder="Title" required />
   <textarea id="description" placeholder="Description" required></textarea>
-  <input type="text" id="residency_number" placeholder="Residency Number (e.g., R1, R1+R2)" />
+  <select id="residency_number" required>
+  <option value="">-- Select Residency --</option>
+  <option value="R1">Residency 1</option>
+  <option value="R1+R2">Residency 1 + 2</option>
+  <option value="R2">Residency 2</option>
+  <option value="R3">Residency 3</option>
+  <option value="R4">Residency 4</option>
+  <option value="R5">Residency 5</option>
+</select>
+
   <input type="text" id="location" placeholder="Location" />
   <input type="number" id="monthly_salary" placeholder="Monthly Salary" />
   <input type="text" id="accommodation_support" placeholder="Accommodation Support" />

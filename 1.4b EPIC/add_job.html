@@ -21,7 +21,16 @@
   <form id="job-form">
     <label>Job Title:<input type="text" id="title" required /></label>
     <label>Description:<textarea id="description" required></textarea></label>
-    <label>Residency Number:<input type="text" id="residency_number" placeholder="e.g., R1, R1+R2" /></label>
+    <label>Residency Number:<select id="residency_number" required>
+  <option value="">-- Select Residency --</option>
+  <option value="R1">Residency 1</option>
+  <option value="R1+R2">Residency 1 + 2</option>
+  <option value="R2">Residency 2</option>
+  <option value="R3">Residency 3</option>
+  <option value="R4">Residency 4</option>
+  <option value="R5">Residency 5</option>
+</select>
+</label>
     <label>Location:<input type="text" id="location" placeholder="e.g., Limerick or Remote" /></label>
     <label>Monthly Salary (€):<input type="number" id="monthly_salary" /></label>
     <label>Accommodation Support:<input type="text" id="accommodation_support" placeholder="e.g., Provided/None" /></label>
