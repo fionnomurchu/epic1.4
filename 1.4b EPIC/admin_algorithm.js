@@ -110,7 +110,7 @@
         array[index][7] = student.student_id;
         console.log(`Third allocation for ${residency}: ${array[index][7]}`);
       const last3 = array[index].slice(-3);
-      await insertInterviews(last3);
+      await insertInterviews(last3,array[index][1]);
       }
       
       if (count <= 3) {
@@ -121,7 +121,11 @@
     }
   }
 
-async function insertInterviews(interviews) {
+
+
+
+
+async function insertInterviews(interviews,jobtitle) {
   if (!Array.isArray(interviews) || interviews.length !== 3) {
     throw new Error("Input must be an array of exactly 3 items.");
   }
@@ -134,15 +138,41 @@ async function insertInterviews(interviews) {
         interview2: interviews[1],
         interview3: interviews[2],
       },
-    ]);
+    ]).select();
 
   if (error) {
     console.error("Error inserting interviews:", error);
     return null;
   }
 
+  const insertedId = data[0]?.id;
+  console.log("Inserted row ID:", insertedId);
+await updateStudentInterview( jobtitle,insertedId)
   return data;
 }
+
+
+
+async function updateStudentInterview(jobtitle, interviewId) {
+  if (!jobtitle || interviewId === undefined) {
+    throw new Error("Both jobtitle and interviewId must be provided.");
+  }
+
+  const { data, error } = await supabase
+    .from('jobs')
+    .update({ interview_id: interviewId })
+    .eq('title', jobtitle)
+    .select(); // optional: returns updated row
+
+  if (error) {
+    console.error("Error updating interview_id:", error);
+    return null;
+  }
+
+  return data;
+}
+
+
 
 
 
