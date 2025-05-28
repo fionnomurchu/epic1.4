@@ -46,7 +46,8 @@
         classRank,
         ranking:rank_id(*)
       `)
-      .eq('year',year);
+      .eq('year',year)
+      .order('classRank', { ascending: true });
 
   if (error) {
     throw new Error('Error fetching students: ' + error.message);
@@ -68,7 +69,7 @@
       return;
     }
 
-    array = data.map(row => [row.id, row.title, row.residency_number, row.number_of_positions,0]);
+    array = data.map(row => [row.id, row.title, row.residency_number, row.number_of_positions,0,0,0,0]);
     console.log('Residency table fetched:', array);
   }
 
@@ -99,7 +100,19 @@
       array[index][4] += 1;
       const count = array[index][4];
       console.log(`Current count for ${residency}: ${count}`);
-
+      if (count == 1) {
+        array[index][5] = student.student_id
+        console.log(`First allocation for ${residency}: ${array[index][5]}`);
+      }else if (count == 2) {
+      array[index][6] = student.student_id;
+        console.log(`Second allocation for ${residency}: ${array[index][6]}`);
+      }else if (count == 3) {
+        array[index][7] = student.student_id;
+        console.log(`Third allocation for ${residency}: ${array[index][7]}`);
+      const last3 = array[index].slice(-3);
+      await insertInterviews(last3);
+      }
+      
       if (count <= 3) {
         console.log('manipulating')
         await manipulate('interview', student.student_id, residency);
@@ -107,6 +120,31 @@
       }
     }
   }
+
+async function insertInterviews(interviews) {
+  if (!Array.isArray(interviews) || interviews.length !== 3) {
+    throw new Error("Input must be an array of exactly 3 items.");
+  }
+
+  const { data, error } = await supabase
+    .from('companyInterview')
+    .insert([
+      {
+        interview1: interviews[0],
+        interview2: interviews[1],
+        interview3: interviews[2],
+      },
+    ]);
+
+  if (error) {
+    console.error("Error inserting interviews:", error);
+    return null;
+  }
+
+  return data;
+}
+
+
 
   async function manipulate(table, studentnum, res) {
     const exists = await attributeExists(table, 'id', studentnum);
