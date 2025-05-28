@@ -1,10 +1,46 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <title>title</title>
+  <meta charset="UTF-8" />
+  <title>Company Interviews & Offers</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-    
+  <header>
+    <nav>
+      <img src="images/ise_logo.jpeg" alt="ISE Logo" class="ise-logo" />
+      <a href="company.html">Dashboard</a>
+      <a href="company_job_board.html">Manage your jobs</a>
+      <a href="add_job.html">Add a Job</a>
+      <a href="company_offers.html" class="active">Interviews/Offers</a>
+      <button id="logout">Log-out</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="interviews-section">
+      <h1>Interviews</h1>
+      <p class="interview-instruction">
+        You will receive the student's CV directly via email. After reviewing, coordinate with the student to arrange an online or in-person interview.
+      </p>
+      <div class="interview-cards" id="interview-cards">
+      </div>
+    </section>
+
+    <section class="offers-section">
+      <h1>Offers</h1>
+      <form id="offer-form">
+        <div id="offer-students">
+        </div>
+        <button type="submit" id="submit-offers-btn">Send Offers</button>
+      </form>
+
+      <h2>Offer Status</h2>
+      <div id="offer-status">
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="js/company_offers.js"></script>
 </body>
 </html>
