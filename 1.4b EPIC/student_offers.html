@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>My Interviews & Offers</title>
+  <title>Student Interviews</title>
   <link rel="stylesheet" href="styles.css" />
+  <script type="module" src="student_offers.js"></script>
 </head>
 <body>
   <header>
@@ -12,32 +12,21 @@
       <a href="student.html">Dashboard</a>
       <a href="student_job_board.html">Job Board</a>
       <a href="ranking.html">Ranking</a>
-      <a href="student_offers.html" class="active">Interviews/Offers</a>
+      <a href="student_offers.html">Interviews/Offers</a>
       <button id="logout">Log-out</button>
     </nav>
   </header>
-
-  <main>
-    <section class="interviews-section">
-      <h1>Interviews</h1>
-      <p class="interview-instruction">
+  <h1>Interviews</h1>
+  <p class="interview-instruction">
         Upon receiving your interview allocations, promptly forward your CV to the email provided for each company. 
         Early submission can expedite the interview process and improve your chances.
       </p>
-      <div class="interview-cards" id="interview-cards">
-      </div>
-    </section>
-
-    <section class="offers-section">
+  <div id="interview-list"></div>
+  <section class="offers-section">
       <h1>Offers</h1>
-      <div id="offers-container">
-      </div>
       <form id="offer-form">
         <button type="submit" id="submit-offer-btn">Submit</button>
       </form>
     </section>
-  </main>
-
-  <script type="module" src="student_offers.js"></script>
 </body>
 </html>

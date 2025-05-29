@@ -223,3 +223,27 @@ HEAD.interview-card {
   border-radius: 6px;
   font-weight: bold;
 }
+#interview-list {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  margin: 20px 0;
+  padding: 0 10px;
+}
+.interview-card {
+  background-color: #2e8b57; 
+  color: white;
+  padding: 20px;
+  width: 30%;
+  margin: 10px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+.interview-card h3 {
+  margin: 0 0 10px;
+  font-size: 1.2em;
+}
+.interview-card p {
+  font-size: 0.95em;
+}

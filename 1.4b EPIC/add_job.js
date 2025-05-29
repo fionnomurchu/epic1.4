@@ -23,6 +23,7 @@ document.getElementById('job-form').addEventListener('submit', async (e) => {
     residency_number: document.getElementById('residency_number').value.trim(),
     location: document.getElementById('location').value.trim(),
     monthly_salary: parseFloat(document.getElementById('monthly_salary').value) || null,
+    contact_email: document.getElementById('contact_email').value.trim(),
     accommodation_support: document.getElementById('accommodation_support').value.trim(),
     special_conditions: document.getElementById('special_conditions').value.trim(),
     number_of_positions: parseInt(document.getElementById('number_of_positions').value),

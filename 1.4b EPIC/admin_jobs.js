@@ -124,6 +124,7 @@ function renderSection(title, jobs) {
       </label>
       <label>Location: <input name="location" value="${job.location || ''}" /></label>
       <label>Salary: <input name="monthly_salary" type="number" value="${job.monthly_salary || ''}" /></label>
+      <label>Contact Email: <input name="contact_email" type="email" value="${job.contact_email || ''}" /></label>
       <label>Accommodation: <input name="accommodation_support" value="${job.accommodation_support || ''}" /></label>
       <label>Special Conditions: <input name="special_conditions" value="${job.special_conditions || ''}" /></label>
       <label>No. of Positions: <input name="number_of_positions" type="number" min="1" value="${job.number_of_positions || 1}" /></label>
@@ -144,6 +145,7 @@ function renderSection(title, jobs) {
         residency_number: formData.get('residency_number'),
         location: formData.get('location'),
         monthly_salary: parseFloat(formData.get('monthly_salary')) || null,
+        contact_email: formData.get('contact_email') || null,
         accommodation_support: formData.get('accommodation_support'),
         special_conditions: formData.get('special_conditions'),
         number_of_positions: parseInt(formData.get('number_of_positions')) || 1
