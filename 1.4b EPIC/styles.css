@@ -247,3 +247,11 @@ HEAD.interview-card {
 .interview-card p {
   font-size: 0.95em;
 }
+.interview-group {
+  margin-bottom: 20px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  display: flex;
+  gap: 10px;
+}
