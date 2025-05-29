@@ -236,6 +236,9 @@ async function fetchJobsByResidency(residency) {
 }
 
 document.getElementById('submitRankingBtn').addEventListener('click', async () => {
+  const confirmSubmit = confirm("Are you sure you want to submit your rankings? This action cannot be undone.");
+  if (!confirmSubmit) return;
+
   const ranks = [];
   let residencyValue = null;
 
@@ -243,29 +246,18 @@ document.getElementById('submitRankingBtn').addEventListener('click', async () =
     const title = item.getAttribute('data-job-title');
     const residency = item.getAttribute('data-residency');
 
-    if (title) {
-      ranks[index] = title;
-    } else {
-      ranks[index] = null;
-    }
+    ranks[index] = title || null;
 
     if (index === 0 && residency) {
       residencyValue = residency;
     }
   });
 
-  const payload = {
-    rank1: ranks[0] || null,
-    rank2: ranks[1] || null,
-    rank3: ranks[2] || null,
-    rank4: ranks[3] || null,
-    rank5: ranks[4] || null,
-    rank6: ranks[5] || null,
-    rank7: ranks[6] || null,
-    rank8: ranks[7] || null,
-    rank9: ranks[8] || null,
-    residency: residencyValue || null
-  };
+  const payload = {};
+  for (let i = 0; i < 20; i++) {
+    payload[`rank${i + 1}`] = ranks[i] || null;
+  }
+  payload.residency = residencyValue || null;
 
   console.log("Submitting payload:", payload);
 
@@ -281,9 +273,10 @@ document.getElementById('submitRankingBtn').addEventListener('click', async () =
     const insertedRankingId = data.id;
     console.log('Inserted ranking ID:', insertedRankingId);
     await updateStudentRankingId(insertedRankingId);
-    alert('Rankings submitted successfully!');
+    window.location.reload(); // refresh after successful submission
   }
 });
+
 
 window.onload = async () => {
   await fetchResidencies();
