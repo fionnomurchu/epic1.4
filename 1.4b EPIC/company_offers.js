@@ -43,11 +43,12 @@ console.log('Job data:', job); // Debug output
     return;
   }
 
+  for(var i = 0;i<job.length; i++){
   // Get interview data using the company's interviewid
   const { data: interview, error: interviewError } = await supabase
     .from('companyInterview')
     .select('*')
-    .eq('id', job[1].interview_id)
+    .eq('id', job[i].interview_id)
     .single();
 console.log('Interview data:', interview); // Debug output
 
@@ -95,14 +96,19 @@ console.log('Interview name map:', interviewNameMap);
 
 
 
-  renderInterviewGroup(interviewNameMap, container);
-  renderInterviewGroup(interviewNameMap, container);
+  renderInterviewGroup(interviewNameMap, container, job[i].title);
 
+  }
 });
 
-function renderInterviewGroup(interviewNameMap, container) {
+function renderInterviewGroup(interviewNameMap, container,jobtitle) {
   const groupDiv = document.createElement('div');
   groupDiv.className = 'interview-group';
+
+  const div = document.createElement('div');
+      div.className = 'interview-card';
+      div.textContent = jobtitle;
+      groupDiv.appendChild(div);
 
   ['interview1', 'interview2', 'interview3'].forEach(key => {
     if (interviewNameMap[key]) {
