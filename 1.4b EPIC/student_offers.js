@@ -24,11 +24,48 @@ window.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
+
   const { data: interview, error: interviewError } = await supabase
     .from('interview')
     .select('*')
-    .eq('id', student.student_id)
+    .eq('id', student.interviewid)
     .single();
+
+    console.log('Interview data:', interview); // Debug output
+
+    const jobtitle1 = interview.interview1;
+const jobtitle2 = interview.interview2;
+const jobtitle3 = interview.interview3;
+
+const interviewTitles = [jobtitle1, jobtitle2, jobtitle3];
+
+// Fetch all relevant jobs in one query
+const { data: jobs, error: jobsError } = await supabase
+  .from('jobs')
+  .select('title, contact_email')
+  .in('title', interviewTitles);
+
+if (jobsError || !jobs) {
+  console.error("Error fetching job emails:", jobsError);
+  return;
+}
+
+// Create a map from job title to contact_email
+const emailMap = {};
+jobs.forEach(job => {
+  emailMap[job.title] = job.contact_email;
+});
+
+// Create an object mapping each interview slot to its corresponding email
+const interviewEmailMap = {
+  interview1: emailMap[jobtitle1] || 'Email not found',
+  interview2: emailMap[jobtitle2] || 'Email not found',
+  interview3: emailMap[jobtitle3] || 'Email not found',
+};
+
+console.log(interviewEmailMap);
+
+
 
   if (interviewError || !interview) {
     container.innerHTML = '<p>No interview data found.</p>';
@@ -40,6 +77,8 @@ window.addEventListener('DOMContentLoaded', async () => {
       const div = document.createElement('div');
       div.className = 'interview-card';
       div.textContent = interview[key];
+      
+      div.textContent += ' ' + interviewEmailMap[key];
       container.appendChild(div);
     }
   });
