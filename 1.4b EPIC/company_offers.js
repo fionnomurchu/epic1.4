@@ -36,6 +36,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     .from('jobs')
     .select('*')
     .eq('company_id', company.id)
+    .eq('has_offer', false);
     
 
     console.log('Company data:', company); // Debug output
@@ -184,24 +185,36 @@ document.getElementById('submit-button').appendChild(submitButton);
 
 
 async function insertInterviewSelections(selections) {
-  // Map to correct DB column names
+  const formattedData = selections
+    .filter(item => item.selected !== null)
+    .map(item => ({
+      student_id: item.selected,
+      job_title: item.jobtitle,
+    }));
 
-
-
-  const formattedData = selections.map(item => ({
-    student_id: item.selected,
-    job_title: item.jobtitle,
-  }));
+  if (formattedData.length === 0) return;
 
   const { data, error } = await supabase
-    .from('offer') // your table name here
+    .from('offer')
     .insert(formattedData);
 
   if (error) {
     console.error('Insert failed:', error);
-  } else {
-    console.log('Insert successful:', data);
+    return;
   }
+
+  // Update `has_offer` for each job
+  for (const item of selections) {
+    if (item.selected) {
+      await supabase
+        .from('jobs')
+        .update({ has_offer: true })
+        .eq('title', item.jobtitle); // or use job.id if available
+    }
+  }
+
+  console.log('Insert successful:', data);
+  window.location.reload(); // Reload to re-trigger UI filtering
 }
 
 
@@ -215,6 +228,9 @@ async function loadSelectedStudents(companyId) {
     .from('jobs')
     .select('id, title')
     .eq('company_id', companyId);
+    
+
+    console.log('Jobs data:', jobs); // Debug output
 
   if (jobError || !jobs) {
     container.innerHTML += '<p>Error loading jobs.</p>';
