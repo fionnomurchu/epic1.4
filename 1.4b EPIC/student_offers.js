@@ -82,7 +82,74 @@ console.log(interviewEmailMap);
       container.appendChild(div);
     }
   });
+
+
+    // Fetch all offer entries where student_id matches current user
+  const { data: offers, error: offerError } = await supabase
+    .from('offer') // Replace with your actual table name if different
+    .select('*')
+    .eq('student_id', student.student_id );
+
+  if (offerError) {
+    console.error('Error fetching offers:', offerError);
+    return null;
+  }
+
+  console.log('Offers for student:', offers);
+
+  displayOfferJobTitles(offers)
+
 });
+
+
+function displayOfferJobTitles(offers) {
+  const container = document.getElementById('offers-container'); // Make sure this exists in your HTML
+  container.innerHTML = ''; // Clear any previous entries
+
+  if (!offers || offers.length === 0) {
+    container.textContent = 'No offers found.';
+    return;
+  }
+
+
+const offerContainer = document.getElementById('offers-container');
+displayOfferButtons(offers, offerContainer);
+
+}
+
+
+
+function displayOfferButtons(offers, container) {
+  container.innerHTML = ''; // Clear previous contents
+
+  const groupDiv = document.createElement('div');
+  groupDiv.className = 'offer-group';
+
+  const title = document.createElement('h3');
+  title.textContent = 'Your Offers';
+  groupDiv.appendChild(title);
+
+  offers.forEach(offer => {
+    const button = document.createElement('button');
+    button.className = 'interview-card'; // Reusing styling
+    button.textContent = offer.job_title;
+    button.dataset.offerId = offer.id;
+
+    // Add selection toggle logic (optional)
+    button.addEventListener('click', () => {
+      const buttons = groupDiv.querySelectorAll('.interview-card');
+      buttons.forEach(btn => btn.classList.remove('selected'));
+      button.classList.add('selected');
+    });
+
+    groupDiv.appendChild(button);
+  });
+
+  container.appendChild(groupDiv);
+}
+
+
+
 
 document.getElementById('logout').addEventListener('click', async () => {
   await supabase.auth.signOut()
