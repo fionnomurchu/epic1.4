@@ -91,37 +91,113 @@ const interviewNameMap = {
   interview3: idToNameMap[interview.interview3] || 'Not Found',
 };
 
+const interviewIdMap = {
+  interview1: interview.interview1,
+  interview2: interview.interview2,
+  interview3: interview.interview3,
+};
+
+
+
+
 console.log('Interview name map:', interviewNameMap);
 
 
 
 
-  renderInterviewGroup(interviewNameMap, container, job[i].title);
+  renderInterviewGroup(interviewNameMap,interviewIdMap, container, job[i].title);
 
   }
 });
 
-function renderInterviewGroup(interviewNameMap, container,jobtitle) {
+const interviewGroups = []; // Stores all interview groups
+
+function renderInterviewGroup(interviewNameMap,interviewIdMap, container, jobtitle) {
   const groupDiv = document.createElement('div');
   groupDiv.className = 'interview-group';
 
-  const div = document.createElement('div');
-      div.className = 'interview-card';
-      div.textContent = jobtitle;
-      groupDiv.appendChild(div);
+  const title = document.createElement('h3');
+  title.textContent = jobtitle;
+  groupDiv.appendChild(title);
+
+  function createSelectableButton(label, studentId) {
+    const button = document.createElement('button');
+    button.className = 'interview-card';
+    button.textContent = label;
+    button.dataset.studentId = studentId; // Store the actual student ID
+
+
+    button.addEventListener('click', () => {
+      const buttons = groupDiv.querySelectorAll('.interview-card');
+      buttons.forEach(btn => btn.classList.remove('selected'));
+      button.classList.add('selected');
+    });
+
+    return button;
+  }
+
+  // Create and append buttons
+
 
   ['interview1', 'interview2', 'interview3'].forEach(key => {
-    if (interviewNameMap[key]) {
-      const div = document.createElement('div');
-      div.className = 'interview-card';
-      div.textContent = interviewNameMap[key];
-      groupDiv.appendChild(div);
-    }
+  const name = interviewNameMap[key];
+  const id = interviewIdMap[key];
+  if (name && id) {
+    groupDiv.appendChild(createSelectableButton(name, id));
+  }
   });
+
   container.appendChild(groupDiv);
+  interviewGroups.push({ jobtitle, groupDiv }); // Store for later use
 }
 
 
+
+const submitButton = document.createElement('button');
+submitButton.textContent = 'Submit';
+submitButton.className = 'submit-button';
+
+submitButton.addEventListener('click', () => {
+  const results = [];
+
+  interviewGroups.forEach(({ jobtitle, groupDiv }) => {
+    const selected = groupDiv.querySelector('.interview-card.selected');
+    results.push({
+      jobtitle,
+selected: selected ? selected.dataset.studentId : null
+
+    });
+  });
+
+  console.log('Selected Interviews:', results);
+  // You can now send `results` to a server, show a summary, etc.
+ insertInterviewSelections(results);
+});
+
+document.body.appendChild(submitButton);
+
+
+
+async function insertInterviewSelections(selections) {
+  // Map to correct DB column names
+
+
+
+  const formattedData = selections.map(item => ({
+    student_id: item.selected,
+    job_title: item.jobtitle,
+  }));
+
+  const { data, error } = await supabase
+    .from('offer') // your table name here
+    .insert(formattedData);
+
+  if (error) {
+    console.error('Insert failed:', error);
+  } else {
+    console.log('Insert successful:', data);
+  }
+}
 
 
 // Logout handler

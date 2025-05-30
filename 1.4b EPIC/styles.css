@@ -255,3 +255,7 @@ HEAD.interview-card {
   display: flex;
   gap: 10px;
 }
+.interview-card.selected {
+  background-color: #007bff;
+  color: white;
+}
