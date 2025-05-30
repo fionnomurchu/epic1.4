@@ -259,3 +259,21 @@ HEAD.interview-card {
   background-color: #007bff;
   color: white;
 }
+
+
+#selected-students {
+  display: flex;
+  flex-wrap: wrap; /* Allows wrapping to next line */
+  gap: 1rem;        /* Adds spacing between cards */
+  justify-content: flex-start; /* Or center / space-between depending on layout */
+  margin-top: 2rem;
+}
+
+.interview-card {
+  flex: 0 1 250px;  /* Width of each card (adjust as needed) */
+  padding: 1rem;
+  border-radius: 0.75rem;
+  text-align: center;
+  font-weight: bold;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}

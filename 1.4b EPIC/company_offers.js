@@ -28,6 +28,9 @@ window.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
+  await loadSelectedStudents(company.id);
+
+
   // Get the company record based on user email
   const { data: job, error: jobError } = await supabase
     .from('jobs')
@@ -172,9 +175,11 @@ selected: selected ? selected.dataset.studentId : null
   console.log('Selected Interviews:', results);
   // You can now send `results` to a server, show a summary, etc.
  insertInterviewSelections(results);
+
 });
 
-document.body.appendChild(submitButton);
+document.getElementById('submit-button').appendChild(submitButton);
+
 
 
 
@@ -198,6 +203,82 @@ async function insertInterviewSelections(selections) {
     console.log('Insert successful:', data);
   }
 }
+
+
+
+async function loadSelectedStudents(companyId) {
+  const container = document.getElementById('selected-students');
+  container.innerHTML = '<h3>Selected Students</h3>';
+
+  // Step 1: Fetch jobs for this company
+  const { data: jobs, error: jobError } = await supabase
+    .from('jobs')
+    .select('id, title')
+    .eq('company_id', companyId);
+
+  if (jobError || !jobs) {
+    container.innerHTML += '<p>Error loading jobs.</p>';
+    return;
+  }
+
+  const jobTitles = jobs.map(job => job.title);
+
+  // Step 2: Fetch all offers for this company's jobs
+  const { data: offers, error: offerError } = await supabase
+    .from('offer')
+    .select('student_id, job_title, accepted')
+    .in('job_title', jobTitles);
+
+  if (offerError || !offers.length) {
+    container.innerHTML += '<p>No selections found.</p>';
+    return;
+  }
+
+  const studentIds = offers.map(offer => offer.student_id);
+
+  // Step 3: Get student names
+  const { data: students, error: studentError } = await supabase
+    .from('students')
+    .select('student_id, name')
+    .in('student_id', studentIds);
+
+  if (studentError) {
+    container.innerHTML += '<p>Error loading student names.</p>';
+    return;
+  }
+
+  const idToName = {};
+  students.forEach(s => idToName[s.student_id] = s.name);
+
+  // Step 4: Display offers with color coding
+  offers.forEach(offer => {
+    const studentName = idToName[offer.student_id] || 'Unknown Student';
+    const div = document.createElement('div');
+    div.className = 'interview-card';
+    div.textContent = `${studentName} — ${offer.job_title}`;
+
+    // Style based on accepted status
+    if (offer.accepted === true) {
+      div.style.backgroundColor = '#d4edda'; // Green
+      div.style.border = '1px solid #28a745';
+      div.style.color = '#000000';
+    } else if (offer.accepted === false) {
+      div.style.backgroundColor = '#f8d7da'; // Red
+      div.style.border = '1px solid #dc3545';
+      div.style.color = '#000000';
+    } else {
+      div.style.backgroundColor = '#f0f0f0'; // Gray
+      div.style.border = '1px solid #ccc';
+      div.style.color = '#000000';
+    }
+
+    container.appendChild(div);
+  });
+}
+
+
+
+
 
 
 // Logout handler
