@@ -97,12 +97,12 @@ console.log(interviewEmailMap);
 
   console.log('Offers for student:', offers);
 
-  displayOfferJobTitles(offers)
+  displayOfferJobTitles(offers, student);
 
 });
 
 
-function displayOfferJobTitles(offers) {
+function displayOfferJobTitles(offers,student) {
   const container = document.getElementById('offers-container'); // Make sure this exists in your HTML
   container.innerHTML = ''; // Clear any previous entries
 
@@ -113,13 +113,13 @@ function displayOfferJobTitles(offers) {
 
 
 const offerContainer = document.getElementById('offers-container');
-displayOfferButtons(offers, offerContainer);
+displayOfferButtons(offers, offerContainer, student);
 
 }
 
 
 
-function displayOfferButtons(offers, container) {
+function displayOfferButtons(offers, container,student) {
   container.innerHTML = ''; // Clear previous contents
 
   const groupDiv = document.createElement('div');
@@ -131,11 +131,11 @@ function displayOfferButtons(offers, container) {
 
   offers.forEach(offer => {
     const button = document.createElement('button');
-    button.className = 'interview-card'; // Reusing styling
+    button.className = 'interview-card';
     button.textContent = offer.job_title;
     button.dataset.offerId = offer.id;
+    button.dataset.jobTitle = offer.job_title;
 
-    // Add selection toggle logic (optional)
     button.addEventListener('click', () => {
       const buttons = groupDiv.querySelectorAll('.interview-card');
       buttons.forEach(btn => btn.classList.remove('selected'));
@@ -145,9 +145,65 @@ function displayOfferButtons(offers, container) {
     groupDiv.appendChild(button);
   });
 
+  // Create Submit Button
+  const submitBtn = document.createElement('button');
+  submitBtn.textContent = 'Submit Selection';
+  submitBtn.className = 'submit-button';
+
+  submitBtn.addEventListener('click', async () => {
+    const selected = groupDiv.querySelector('.interview-card.selected');
+    if (!selected) {
+      alert('Please select an offer first.');
+      return;
+    }
+
+    const selectedOfferId = selected.dataset.offerId;
+    const jobTitle = selected.dataset.jobTitle;
+
+//
+///
+
+/////
+////
+
+  const studentId = student.student_id;
+
+  // Step 2: Set all offers for this student to accepted = false
+  const { error: resetError } = await supabase
+    .from('offer')
+    .update({ accepted: false })
+    .eq('student_id', studentId);
+
+  if (resetError) {
+    console.error('Failed to reset offers:', resetError);
+    alert('Something went wrong resetting old offers.');
+    return;
+  }
+
+
+
+
+   //Step 3: Update the selected offer row to mark it as accepted
+  const { data, error } = await supabase
+    .from('offer') // your existing offer table
+    .update({ accepted: true })
+    .eq('id', selectedOfferId);
+
+
+    if (error) {
+      console.error('Submission failed:', error);
+      alert('Submission failed. Please try again.');
+    } else {
+      console.log('Submitted:', data);
+      alert('Offer submitted successfully!');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitted';
+    }
+  });
+
+  groupDiv.appendChild(submitBtn);
   container.appendChild(groupDiv);
 }
-
 
 
 
