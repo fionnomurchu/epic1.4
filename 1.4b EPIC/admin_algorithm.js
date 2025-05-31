@@ -1,11 +1,13 @@
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
+//create Supabase client instance to interact w Supabase backend
+//anon key=JWT(authenticates app for accessing db w public permissions)
   const supabaseUrl = 'https://arzbecskqesqesfgmkgu.supabase.co'
   const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyemJlY3NrcWVzcWVzZmdta2d1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc5Mzc3NDcsImV4cCI6MjA2MzUxMzc0N30.j_JklSlOYHuuKEIDdSkgeiemwY1lfNQMk0fRoJfb2pQ';
   const supabase = createClient(supabaseUrl, supabaseKey)
 
   let array = [];
-
+//map residencies to year values
   const residencyMap = {
     "R1, R1+R2": 1,
     "R2": 2,
@@ -14,7 +16,10 @@
     "R5": 4
   };
 
-
+//listens for click event
+//sets text to "Running algorithm"
+//retrieve selected value from drop down
+//converts dropdown value to numerical value
   document.getElementById('run-algo').addEventListener('click', async () => {
     document.getElementById('algo-status').textContent = 'Running algorithm...';
       const select = document.getElementById('residency-filter');
@@ -34,10 +39,13 @@
   });
 
 
+
   async function runAlgorithm(residency_number, year) {
     await fetchResidencyTable(residency_number);
 
-
+//fetch from students table
+//joins with rank_id table via FK
+//filters for students in specified year, from best to worst
     const { data: students, error } = await supabase
       .from('students')
       .select(`
@@ -53,11 +61,14 @@
     throw new Error('Error fetching students: ' + error.message);
   }
     console.log('Fetched students:', students); // Debug output
+
+
     for (const student of students) {
       await processStudent(student);
     }
   }
 
+  //fetches data from db + formats it into array for matching algorithm
   async function fetchResidencyTable(residency_number) {
     const { data, error } = await supabase
       .from('jobs')
@@ -68,7 +79,7 @@
       console.error('Error fetching residencies:', error);
       return;
     }
-
+//each residency becomes an array of 8 elements
     array = data.map(row => [row.id, row.title, row.residency_number, row.number_of_positions,0,0,0,0]);
     console.log('Residency table fetched:', array);
   }
@@ -83,13 +94,17 @@
 
   async function processStudent(student) {
     let alloc_count = 0;
+//loop through students top 3 rankings
+//get students i-th choice
+//if placement fails, move to rank i+1
 
     for (let i = 1; alloc_count < 3; i++) {
       const rankKey = `rank${i}`;
       const residency = student.ranking[rankKey];
       console.log(`Processing student: ${student.name}, Residency: ${residency}`);
+      //skip if no residency exists for this rank
       if (!residency) continue;
-
+      //skip if residency program !exist
       const exists = residencyExists(residency);
       console.log(`Residency exists: ${exists}`);
       if (!exists) continue;
@@ -112,7 +127,7 @@
       const last3 = array[index].slice(-3);
       await insertInterviews(last3,array[index][1]);
       }
-      
+      //create interviews if residency is full and increase alloc_count to show students been allocated a place
       if (count <= 3) {
         console.log('manipulating')
         await manipulate('interview', student.student_id, residency);
@@ -126,10 +141,11 @@
 
 
 async function insertInterviews(interviews,jobtitle) {
+  //ensures proper data format before db operations
   if (!Array.isArray(interviews) || interviews.length !== 3) {
     throw new Error("Input must be an array of exactly 3 items.");
   }
-
+//inserts new row w 3 interview slots
   const { data, error } = await supabase
     .from('companyInterview')
     .insert([
@@ -144,7 +160,8 @@ async function insertInterviews(interviews,jobtitle) {
     console.error("Error inserting interviews:", error);
     return null;
   }
-
+//extracts auto generated id from new record
+//updates corresponding job preference w interview
   const insertedId = data[0]?.id;
   console.log("Inserted row ID:", insertedId);
 await updateStudentInterview( jobtitle,insertedId)
@@ -154,10 +171,12 @@ await updateStudentInterview( jobtitle,insertedId)
 
 
 async function updateStudentInterview(jobtitle, interviewId) {
+  //prevents null values that would corrupt relationships
   if (!jobtitle || interviewId === undefined) {
     throw new Error("Both jobtitle and interviewId must be provided.");
   }
-
+//set interview_id as FK
+//target specific residency by title
   const { data, error } = await supabase
     .from('jobs')
     .update({ interview_id: interviewId })
@@ -177,12 +196,16 @@ async function updateStudentInterview(jobtitle, interviewId) {
 
 
   async function manipulate(table, studentnum, res) {
+    //verify if student already has interview record
+    //if it doesnt, create new record
     const exists = await attributeExists(table, 'id', studentnum);
     if (exists) {
       const isNull = await isAttributeNull(table, 'id', studentnum, 'interview2');
       if (isNull) {
+        //find interview 2 in table and update based on algorithm
         await updateAttribute(table, 'id', studentnum, 'interview2', res);
       } else {
+        //find interview 3 slot and update based on algorithm
         await updateAttribute(table, 'id', studentnum, 'interview3', res);
         await updateAttribute('students', 'student_id', studentnum, 'interviewid', studentnum);
       }
@@ -192,6 +215,8 @@ async function updateStudentInterview(jobtitle, interviewId) {
   }
 
   async function attributeExists(tableName, columnName, valueToMatch) {
+    //queries only one specified column
+    //stops after 1 match
     const { data, error } = await supabase
       .from(tableName)
       .select(columnName)
@@ -202,7 +227,7 @@ async function updateStudentInterview(jobtitle, interviewId) {
       console.error('Error checking attribute:', error);
       return false;
     }
-
+//true if atleast one matching record
     return data.length > 0;
   }
 
@@ -217,10 +242,10 @@ async function updateStudentInterview(jobtitle, interviewId) {
       console.error('Error checking null attribute:', error);
       return false;
     }
-
+//return true if data is null/undefined || if a data attributes null
     return data?.[attribute] === null;
   }
-
+//function to allocate student their first residency
   async function addEntity(table, id, allo1Value) {
     const { data, error } = await supabase
       .from(table)
@@ -233,7 +258,7 @@ async function updateStudentInterview(jobtitle, interviewId) {
 
     return true;
   }
-
+//updates specific attribute in any table where a matching column has specified value
   async function updateAttribute(table, matchColumn, matchValue, attribute, newValue) {
     const { data, error } = await supabase
       .from(table)

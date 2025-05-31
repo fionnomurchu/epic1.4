@@ -1,6 +1,10 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+//create Supabase client instance to interact w Supabase backend
+//anon key=JWT(authenticates app for accessing db w public permissions)
 const supabase = createClient('https://arzbecskqesqesfgmkgu.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyemJlY3NrcWVzcWVzZmdta2d1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc5Mzc3NDcsImV4cCI6MjA2MzUxMzc0N30.j_JklSlOYHuuKEIDdSkgeiemwY1lfNQMk0fRoJfb2pQ');
 
+//if logout pressed, trigger signOut and clear local storage to invalidate token
+//and redirect admin to login page(index.html)
 const logout = document.getElementById('logout');
 logout?.addEventListener('click', async () => {
   await supabase.auth.signOut();
@@ -8,12 +12,14 @@ logout?.addEventListener('click', async () => {
   window.location.href = 'index.html';
 });
 
+//retrieves html elements entered in form to place job
 const jobForm = document.getElementById('admin-job-form');
+//retrieves html elements to manipulate the jobs list
 const jobList = document.getElementById('admin-job-list');
 
 jobForm?.addEventListener('submit', async (e) => {
   e.preventDefault();
-
+//initialise job parameters from form
   const job = {
     company_id: document.getElementById('company-select').value,
     title: document.getElementById('title').value.trim(),
@@ -25,7 +31,7 @@ jobForm?.addEventListener('submit', async (e) => {
     special_conditions: document.getElementById('special_conditions').value.trim(),
     number_of_positions: parseInt(document.getElementById('number_of_positions').value) || 1
   };
-
+//insert job parameters entered in html form to supabase
   const { error } = await supabase.from('jobs').insert(job);
   if (error) {
     alert('Failed to add job: ' + error.message);
@@ -36,6 +42,7 @@ jobForm?.addEventListener('submit', async (e) => {
   }
 });
 
+//fetches company data and populates html dropdown
 async function loadCompanies() {
   const { data: companies, error } = await supabase.from('companies').select('id, name');
   const select = document.getElementById('company-select');
@@ -52,7 +59,7 @@ async function loadCompanies() {
     select.appendChild(opt);
   });
 }
-
+//fetches all jobs from db
 async function loadJobs() {
   const { data: jobs, error } = await supabase.from('jobs').select('*').order('title');
 
@@ -76,7 +83,9 @@ async function loadJobs() {
   };
 
   jobs.forEach((job) => {
+    //remove regex and make uppercase ie r1 + r2 --> R1+R2
     const rn = job.residency_number?.toUpperCase().replace(/\s+/g, '');
+    //checks normalized value and assigns jobs to group
     if (rn === 'R1') grouped.R1.push(job);
     else if (rn === 'R1+R2' || rn === 'R2+R1') grouped.R1R2.push(job);
     else if (rn === 'R2') grouped.R2.push(job);
@@ -85,6 +94,7 @@ async function loadJobs() {
     else if (rn === 'R5') grouped.R5.push(job);
   });
 
+  //display jobs in html based on group
   jobList.innerHTML = '';
   renderSection('Residency 1 Jobs', grouped.R1);
   renderSection('Residency 1 + 2 Jobs', grouped.R1R2);
@@ -95,14 +105,19 @@ async function loadJobs() {
 }
 
 function renderSection(title, jobs) {
+  //immediately exit if no jobs exist
   if (jobs.length === 0) return;
 
+  //create container "section element"
   const section = document.createElement('section');
   section.className = 'job-section';
+  //apply heading for grouped residencies e.g"Residency 4 Jobs"
   const heading = document.createElement('h2');
   heading.textContent = title;
   section.appendChild(heading);
 
+  //create an editable form for each job
+  //works with logic from loadJobs func
   jobs.forEach(job => {
     const jobCard = document.createElement('form');
     jobCard.className = 'job-card editable';
@@ -133,12 +148,13 @@ function renderSection(title, jobs) {
         <button type="button" class="delete-job">Remove</button>
       </div>
     `;
-
+    //action listener w e.preventDefault to stop page from reloading
     jobCard.addEventListener('submit', async (e) => {
       e.preventDefault();
+      ////get job id from card's attribute
       const formData = new FormData(jobCard);
       const jobId = jobCard.dataset.id;
-
+      //update fields
       const update = {
         title: formData.get('title'),
         description: formData.get('description'),
@@ -156,27 +172,27 @@ function renderSection(title, jobs) {
         alert('Update failed: ' + error.message);
       } else {
         alert('Job updated successfully');
-        loadJobs();
+        loadJobs();//refresh list
       }
     });
-
+    //action listener to delete job
     jobCard.querySelector('.delete-job').addEventListener('click', async () => {
       const confirmed = confirm('Are you sure you want to delete this job?');
       if (!confirmed) return;
-
+      //target job.id to be deleted from supabase
       const { error } = await supabase.from('jobs').delete().eq('id', job.id);
       if (error) {
         alert('Deletion failed: ' + error.message);
       } else {
         alert('Job removed.');
-        loadJobs();
+        loadJobs();//refresh list
       }
     });
 
-    section.appendChild(jobCard);
+    section.appendChild(jobCard);//add each job to its category section
   });
 
-  jobList.appendChild(section);
+  jobList.appendChild(section);//add completed sections to main container
 }
 
 loadCompanies();

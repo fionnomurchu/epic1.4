@@ -1,13 +1,15 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-
+//create Supabase client instance to interact w Supabase backend
+//anon key=JWT(authenticates app for accessing db w public permissions)
 const supabase = createClient(
   'https://arzbecskqesqesfgmkgu.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyemJlY3NrcWVzcWVzZmdta2d1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc5Mzc3NDcsImV4cCI6MjA2MzUxMzc0N30.j_JklSlOYHuuKEIDdSkgeiemwY1lfNQMk0fRoJfb2pQ'
 );
-
+//retrive companyID from local storage(browser)
+//if id is invalid, redirect them to login page
 const companyId = localStorage.getItem('company_id');
 if (!companyId) window.location.href = 'index.html';
-
+//action listener to sign out
 const logoutButton = document.getElementById('logout');
 logoutButton?.addEventListener('click', async () => {
   await supabase.auth.signOut();
@@ -15,14 +17,17 @@ logoutButton?.addEventListener('click', async () => {
   window.location.href = 'index.html';
 });
 
+//store reference to company-job-board element
 const jobBoard = document.getElementById('company-job-board');
 
 async function fetchCompanyJobs() {
+  //retrieve all job postings for current company logged in
   const { data: jobs, error } = await supabase
     .from('jobs')
     .select('*')
     .eq('company_id', companyId);
 
+  //builds editable form for each job
   jobBoard.innerHTML = '';
 
   if (error) {
@@ -66,7 +71,8 @@ async function fetchCompanyJobs() {
     `;
 
     jobBoard.appendChild(form);
-
+    //collect updated fields using FormData
+    //
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const formData = new FormData(form);
@@ -82,7 +88,7 @@ async function fetchCompanyJobs() {
         special_conditions: formData.get('special_conditions'),
         number_of_positions: parseInt(formData.get('number_of_positions')) || 1
       };
-
+      //send update to supabase
       const { error } = await supabase
         .from('jobs')
         .update(updates)
@@ -94,7 +100,7 @@ async function fetchCompanyJobs() {
         alertStyled('Job updated successfully!');
       }
     });
-
+    //delete job option
     form.querySelector('.delete-button').addEventListener('click', async () => {
       const confirmed = confirm('Are you sure you want to delete this job?');
       if (!confirmed) return;

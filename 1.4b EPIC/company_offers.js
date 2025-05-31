@@ -1,5 +1,7 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
+//create Supabase client instance to interact w Supabase backend
+//anon key=JWT(authenticates app for accessing db w public permissions)
 const supabaseUrl = 'https://arzbecskqesqesfgmkgu.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyemJlY3NrcWVzcWVzZmdta2d1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc5Mzc3NDcsImV4cCI6MjA2MzUxMzc0N30.j_JklSlOYHuuKEIDdSkgeiemwY1lfNQMk0fRoJfb2pQ';
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -7,14 +9,14 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 window.addEventListener('DOMContentLoaded', async () => {
   const container = document.getElementById('interview-list');
 
-  // Get the current user
+  //verifies logged in user
   const { data: { user }, error: userError } = await supabase.auth.getUser();
   if (userError || !user) {
     container.innerHTML = '<p>Error: No user logged in.</p>';
     return;
   }
 
-  // Get the company record based on user email
+  //get the company record based on user email
   const { data: company, error: companyError } = await supabase
     .from('companies')
     .select('*')
@@ -48,7 +50,8 @@ console.log('Job data:', job); // Debug output
   }
 
   for(var i = 0;i<job.length; i++){
-  // Get interview data using the company's interviewid
+  //fetches interview slots for each job
+  //handles 3 interview slots per job
   const { data: interview, error: interviewError } = await supabase
     .from('companyInterview')
     .select('*')
@@ -68,7 +71,8 @@ const studentIds = [
   interview.interview3,
 ];
 
-// Query all matching students in one call
+//gets names for all interviewed students
+//creates mapping id between ids and names
 const { data: students, error: studentError } = await supabase
   .from('students')
   .select('student_id, name')
@@ -115,7 +119,9 @@ console.log('Interview name map:', interviewNameMap);
 });
 
 const interviewGroups = []; // Stores all interview groups
-
+//creates interactive interview cards
+//allows selection of one candidate per job
+//groups interviews by job title
 function renderInterviewGroup(interviewNameMap,interviewIdMap, container, jobtitle) {
   const groupDiv = document.createElement('div');
   groupDiv.className = 'interview-group';
@@ -183,7 +189,8 @@ document.getElementById('submit-button').appendChild(submitButton);
 
 
 
-
+//records companys candidate selection
+//update job status to reflect offers made
 async function insertInterviewSelections(selections) {
   const formattedData = selections
     .filter(item => item.selected !== null)
@@ -223,7 +230,7 @@ async function loadSelectedStudents(companyId) {
   const container = document.getElementById('selected-students');
   container.innerHTML = '<h3>Selected Students</h3>';
 
-  // Step 1: Fetch jobs for this company
+  //Step 1: Fetch jobs for this company
   const { data: jobs, error: jobError } = await supabase
     .from('jobs')
     .select('id, title')
@@ -239,7 +246,7 @@ async function loadSelectedStudents(companyId) {
 
   const jobTitles = jobs.map(job => job.title);
 
-  // Step 2: Fetch all offers for this company's jobs
+  //Step 2: Fetch all offers for this company's jobs
   const { data: offers, error: offerError } = await supabase
     .from('offer')
     .select('student_id, job_title, accepted')
@@ -252,7 +259,7 @@ async function loadSelectedStudents(companyId) {
 
   const studentIds = offers.map(offer => offer.student_id);
 
-  // Step 3: Get student names
+  // Step 3:Get student names
   const { data: students, error: studentError } = await supabase
     .from('students')
     .select('student_id, name')
@@ -266,14 +273,14 @@ async function loadSelectedStudents(companyId) {
   const idToName = {};
   students.forEach(s => idToName[s.student_id] = s.name);
 
-  // Step 4: Display offers with color coding
+  // Step 4:Display offers with color coding
   offers.forEach(offer => {
     const studentName = idToName[offer.student_id] || 'Unknown Student';
     const div = document.createElement('div');
     div.className = 'interview-card';
     div.textContent = `${studentName} — ${offer.job_title}`;
 
-    // Style based on accepted status
+    //Style based on accepted status
     if (offer.accepted === true) {
       div.style.backgroundColor = '#d4edda'; // Green
       div.style.border = '1px solid #28a745';
@@ -297,7 +304,7 @@ async function loadSelectedStudents(companyId) {
 
 
 
-// Logout handler
+//Logout handler
 document.getElementById('logout').addEventListener('click', async () => {
   await supabase.auth.signOut();
   localStorage.clear();
