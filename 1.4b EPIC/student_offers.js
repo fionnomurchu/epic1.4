@@ -199,10 +199,47 @@ function displayOfferButtons(offers, container,student) {
       submitBtn.disabled = true;
       submitBtn.textContent = 'Submitted';
     }
+
+const { data: rejected, error: jobsError } = await supabase
+  .from('offer')
+  .select('*')
+  .eq('student_id', studentId)
+    .eq('accepted',false);
+
+
+    console.log('Rejected Offers:', rejected);
+
+    await resetJobOfferStatus(rejected);
   });
+
+
+
+
 
   groupDiv.appendChild(submitBtn);
   container.appendChild(groupDiv);
+}
+
+
+
+
+async function resetJobOfferStatus(rejected) {
+  // Get unique job titles from the rejected array
+  const jobTitles = [...new Set(rejected.map(item => item.job_title))];
+
+  // Loop through and update each job's `has_offer` to false
+  for (const title of jobTitles) {
+    const { error } = await supabase
+      .from('jobs')
+      .update({ has_offer: false })
+      .eq('title', title);
+
+    if (error) {
+      console.error(`Failed to update job "${title}":`, error);
+    } else {
+      console.log(`Job "${title}" updated to has_offer = false`);
+    }
+  }
 }
 
 

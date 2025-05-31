@@ -33,7 +33,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   await loadSelectedStudents(company.id);
 
 
-  // Get the company record based on user email
+  // Get all jobs for that company that have offers set to false
   const { data: job, error: jobError } = await supabase
     .from('jobs')
     .select('*')
@@ -225,7 +225,7 @@ async function insertInterviewSelections(selections) {
 }
 
 
-
+//for offers
 async function loadSelectedStudents(companyId) {
   const container = document.getElementById('selected-students');
   container.innerHTML = '<h3>Selected Students</h3>';
