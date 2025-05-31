@@ -66,6 +66,8 @@
     for (const student of students) {
       await processStudent(student);
     }
+
+    await handleUnderfilledResidencies();  // <-- handles leftovers
   }
 
   //fetches data from db + formats it into array for matching algorithm
@@ -80,7 +82,7 @@
       return;
     }
 //each residency becomes an array of 8 elements
-    array = data.map(row => [row.id, row.title, row.residency_number, row.number_of_positions,0,0,0,0]);
+    array = data.map(row => [row.id, row.title, row.residency_number, row.number_of_positions,0,0,0,0,0,0,0]);
     console.log('Residency table fetched:', array);
   }
 
@@ -124,11 +126,30 @@
       }else if (count == 3) {
         array[index][7] = student.student_id;
         console.log(`Third allocation for ${residency}: ${array[index][7]}`);
-      const last3 = array[index].slice(-3);
+      if(array[index][3] ==1){
+        const last3 = array[index].slice(-6);
       await insertInterviews(last3,array[index][1]);
       }
+      }else if (count == 4) {
+        array[index][8] = student.student_id
+        console.log(`4th allocation for ${residency}: ${array[index][8]}`);
+      }else if (count == 5) {
+      array[index][9] = student.student_id;
+        console.log(`5th allocation for ${residency}: ${array[index][9]}`);
+      }else if (count == 6) {
+        array[index][10] = student.student_id;
+        console.log(`6th allocation for ${residency}: ${array[index][10]}`);
+      if(array[index][3] ==2){
+        const last3 = array[index].slice(-6);
+      await insertInterviews(last3,array[index][1]);
+      }
+    }
+
+
+
+
       //create interviews if residency is full and increase alloc_count to show students been allocated a place
-      if (count <= 3) {
+      if (count <= array[index][3]*3) {
         console.log('manipulating')
         await manipulate('interview', student.student_id, residency);
         alloc_count++;
@@ -140,11 +161,11 @@
 
 
 
-async function insertInterviews(interviews,jobtitle) {
-  //ensures proper data format before db operations
-  if (!Array.isArray(interviews) || interviews.length !== 3) {
-    throw new Error("Input must be an array of exactly 3 items.");
-  }
+async function insertInterviews(interview,jobtitle) {
+
+  //sets all 0 values to null
+const interviews = interview.map(value => value === 0 ? null : value);
+
 //inserts new row w 3 interview slots
   const { data, error } = await supabase
     .from('companyInterview')
@@ -153,6 +174,9 @@ async function insertInterviews(interviews,jobtitle) {
         interview1: interviews[0],
         interview2: interviews[1],
         interview3: interviews[2],
+        interview4: interviews[3],
+        interview5: interviews[4],
+        interview6: interviews[5],
       },
     ]).select();
 
@@ -192,9 +216,6 @@ async function updateStudentInterview(jobtitle, interviewId) {
 }
 
 
-
-
-
   async function manipulate(table, studentnum, res) {
     //verify if student already has interview record
     //if it doesnt, create new record
@@ -231,7 +252,7 @@ async function updateStudentInterview(jobtitle, interviewId) {
     return data.length > 0;
   }
 
-  async function isAttributeNull(table, key, value, attribute) {
+async function isAttributeNull(table, key, value, attribute) {
     const { data, error } = await supabase
       .from(table)
       .select(attribute)
@@ -245,7 +266,8 @@ async function updateStudentInterview(jobtitle, interviewId) {
 //return true if data is null/undefined || if a data attributes null
     return data?.[attribute] === null;
   }
-//function to allocate student their first residency
+
+  //function to allocate student their first residency
   async function addEntity(table, id, allo1Value) {
     const { data, error } = await supabase
       .from(table)
@@ -258,7 +280,25 @@ async function updateStudentInterview(jobtitle, interviewId) {
 
     return true;
   }
-//updates specific attribute in any table where a matching column has specified value
+
+async function handleUnderfilledResidencies() {
+  for (let i = 0; i < array.length; i++) {
+    const count = array[i][4];              // Number of allocated students
+    const capacity = array[i][3] * 3;       // Max slots
+    const residencyName = array[i][1];
+
+    if (count > 0 && count < capacity) {
+      console.log(`Residency ${residencyName} underfilled with ${count} slots filled.`);
+
+      // Get the last 6 elements for interview student IDs
+      const last3 = array[i].slice(-6);
+      await insertInterviews(last3, residencyName);
+    }
+  }
+}
+
+
+  //updates specific attribute in any table where a matching column has specified value
   async function updateAttribute(table, matchColumn, matchValue, attribute, newValue) {
     const { data, error } = await supabase
       .from(table)
