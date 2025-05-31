@@ -40,7 +40,16 @@ async function fetchCompanyJobs() {
     return;
   }
 
+  // Custom sort order for residency_number
+  const residencyOrder = ['R1', 'R1+R2', 'R2', 'R3', 'R4', 'R5'];
+  jobs.sort((a, b) => {
+    const indexA = residencyOrder.indexOf(a.residency_number);
+    const indexB = residencyOrder.indexOf(b.residency_number);
+    return indexA - indexB;
+  });
+
   jobs.forEach((job) => {
+
     const form = document.createElement('form');
     form.className = 'job-card';
     form.dataset.id = job.id;
@@ -61,6 +70,7 @@ async function fetchCompanyJobs() {
       </label>
       <label>Location: <input name="location" value="${job.location || ''}" /></label>
       <label>Monthly Salary: <input name="monthly_salary" type="number" value="${job.monthly_salary || ''}" /></label>
+      <label>Contact Email: <input name="contact_email" type="email" value="${job.contact_email || ''}" required /></label>
       <label>Accommodation Support: <input name="accommodation_support" value="${job.accommodation_support || ''}" /></label>
       <label>Special Conditions: <input name="special_conditions" value="${job.special_conditions || ''}" /></label>
       <label>No. of Positions: <input name="number_of_positions" type="number" value="${job.number_of_positions || 1}" min="1" required /></label>
@@ -84,6 +94,7 @@ async function fetchCompanyJobs() {
         residency_number: formData.get('residency_number'),
         location: formData.get('location'),
         monthly_salary: parseFloat(formData.get('monthly_salary')) || null,
+        contact_email: formData.get('contact_email'),
         accommodation_support: formData.get('accommodation_support'),
         special_conditions: formData.get('special_conditions'),
         number_of_positions: parseInt(formData.get('number_of_positions')) || 1
