@@ -32,14 +32,6 @@ document.getElementById('logout').addEventListener('click', async () => {
   window.location.href = 'index.html';
 });
 
-// Fetch all jobs from the database
-async function fetchJobs() {
-  const { data, error } = await supabase.from('jobs').select('*');
-  if (error) return showError('Failed to fetch job data from Supabase. ' + error.message);
-  jobs = data;
-  initializeList();
-}
-
 // Build the job list UI
 function initializeList() {
   nameList.innerHTML = '';
@@ -64,11 +56,12 @@ function initializeList() {
     const description = document.createElement('div');
     description.className = 'description';
     description.innerHTML = `
-      <strong>Description:</strong> ${job.description || 'N/A'}<br>
       <strong>Location:</strong> ${job.location || 'N/A'}<br>
       <strong>Salary:</strong> €${job.monthly_salary || 'N/A'}<br>
       <strong>Accommodation:</strong> ${job.accommodation_support || 'N/A'}<br>
-      <strong>Special Conditions:</strong> ${job.special_conditions || 'None'}
+      <strong>Special Conditions:</strong> ${job.special_conditions || 'None'}<br>
+      <strong>Positions Available:</strong> ${job.positions_available || 'N/A'}<br>
+      <strong>Description:</strong> ${job.description || 'N/A'}<br>
     `;
 
     toggleBtn.addEventListener('click', () => toggleDescription(toggleBtn, description));
