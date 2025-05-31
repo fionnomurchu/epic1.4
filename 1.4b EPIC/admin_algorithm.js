@@ -82,7 +82,7 @@
       return;
     }
 //each residency becomes an array of 8 elements
-    array = data.map(row => [row.id, row.title, row.residency_number, row.number_of_positions,0,0,0,0,0,0,0]);
+    array = data.map(row => [row.id, row.title, row.residency_number, row.number_of_positions,0,0,0,0,0,0,0,0,0,0]);
     console.log('Residency table fetched:', array);
   }
 
@@ -127,7 +127,7 @@
         array[index][7] = student.student_id;
         console.log(`Third allocation for ${residency}: ${array[index][7]}`);
       if(array[index][3] ==1){
-        const last3 = array[index].slice(-6);
+        const last3 = array[index].slice(-9);
       await insertInterviews(last3,array[index][1]);
       }
       }else if (count == 4) {
@@ -140,7 +140,20 @@
         array[index][10] = student.student_id;
         console.log(`6th allocation for ${residency}: ${array[index][10]}`);
       if(array[index][3] ==2){
-        const last3 = array[index].slice(-6);
+        const last3 = array[index].slice(-9);
+      await insertInterviews(last3,array[index][1]);
+      }
+    }else if (count == 7) {
+      array[index][11] = student.student_id;
+        console.log(`7th allocation for ${residency}: ${array[index][11]}`);
+      }else if (count == 8) {
+      array[index][12] = student.student_id;
+        console.log(`8th allocation for ${residency}: ${array[index][12]}`);
+      }else if (count == 9) {
+        array[index][13] = student.student_id;
+        console.log(`9th allocation for ${residency}: ${array[index][13]}`);
+      if(array[index][13] ==3){
+        const last3 = array[index].slice(-9);
       await insertInterviews(last3,array[index][1]);
       }
     }
@@ -177,6 +190,9 @@ const interviews = interview.map(value => value === 0 ? null : value);
         interview4: interviews[3],
         interview5: interviews[4],
         interview6: interviews[5],
+        interview7: interviews[6],
+        interview8: interviews[7],
+        interview9: interviews[8],
       },
     ]).select();
 
@@ -291,7 +307,7 @@ async function handleUnderfilledResidencies() {
       console.log(`Residency ${residencyName} underfilled with ${count} slots filled.`);
 
       // Get the last 6 elements for interview student IDs
-      const last3 = array[i].slice(-6);
+      const last3 = array[i].slice(-9);
       await insertInterviews(last3, residencyName);
     }
   }
