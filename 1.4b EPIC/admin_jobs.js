@@ -169,9 +169,9 @@ function renderSection(title, jobs) {
 
       const { error } = await supabase.from('jobs').update(update).eq('id', jobId);
       if (error) {
-        alert('Update failed: ' + error.message);
+        alertStyled('Update failed: ' + error.message);
       } else {
-        alert('Job updated successfully');
+        alertStyled('Job updated successfully');
         loadJobs();//refresh list
       }
     });
@@ -182,9 +182,9 @@ function renderSection(title, jobs) {
       //target job.id to be deleted from supabase
       const { error } = await supabase.from('jobs').delete().eq('id', job.id);
       if (error) {
-        alert('Deletion failed: ' + error.message);
+        alertStyled('Deletion failed: ' + error.message);
       } else {
-        alert('Job removed.');
+        alertStyled('Job removed.');
         loadJobs();//refresh list
       }
     });
@@ -197,3 +197,11 @@ function renderSection(title, jobs) {
 
 loadCompanies();
 loadJobs();
+
+function alertStyled(message) {
+  const alertBox = document.createElement('div');
+  alertBox.className = 'alert';
+  alertBox.textContent = message;
+  document.body.prepend(alertBox);
+  setTimeout(() => alertBox.remove(), 5000);
+}
