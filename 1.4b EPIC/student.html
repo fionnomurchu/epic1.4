@@ -6,6 +6,8 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+
+  <!--Navigation Header-->
   <header>
     <nav>
       <img src="images/ise_logo.jpeg" alt="ISE Logo" class="ise-logo" />
@@ -17,6 +19,8 @@
     </nav>
   </header>
   <h1>Welcome to your student dashboard</h1>
+
+  <!--Intro section with dashboard and a visual timeline-->
 <section class="intro-timeline">
   <div class="dashboard-intro">
     <h2>Welcome to the ISE Residency Portal</h2>
@@ -39,14 +43,6 @@
   <iframe src="docs/residency_overview.pdf" width="900px" height="600px"></iframe>
 </section>
   <script type="module" src="student.js"></script>
-  <script type="module">
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-  const supabase = createClient('https://arzbecskqesqesfgmkgu.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyemJlY3NrcWVzcWVzZmdta2d1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc5Mzc3NDcsImV4cCI6MjA2MzUxMzc0N30.j_JklSlOYHuuKEIDdSkgeiemwY1lfNQMk0fRoJfb2pQ');
-  document.getElementById('logout').addEventListener('click', async () => {
-    await supabase.auth.signOut();
-    localStorage.clear();
-    window.location.href = 'index.html';
-  });
 </script>
 </body>
 </html>

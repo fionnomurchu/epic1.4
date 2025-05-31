@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <!--Navigation header-->
   <header>
     <nav>
       <img src="images/ise_logo.jpeg" alt="ISE Logo" class="ise-logo" />
@@ -17,27 +18,38 @@
     </nav>
   </header>
 
+<!--Residency filter dropdown-->	
   <div id="residencyFilterContainer">
   <label for="residencySelect"><strong>Select Residency Number:</strong></label>
   <select id="residencySelect">
     <option value="">-- Select Residency --</option>
+    <!--Options will be dynamically populated-->
   </select>
 </div>
   <main>
     <h1>Company Ranking Application</h1>
     <div class="instructions">
+      <!--User instructions-->
       <p><strong>How to use:</strong> Enter a unique rank number (1, 2, 3, etc.) next to each company name. Each rank can only be assigned to one company. Click the arrow to view company descriptions.</p>
     </div>
-    <div class="error-message" id="errorMessage"></div>
+    <!--Error message display (rankings not submitted)-->
+    <div class="error-message" id="errorMessage"></div> 
+    
+    <!--List of companies to rank-->
     <div class="name-list" id="nameList"></div>
+    
+    <!--Section showing assigned ranks-->
     <div class="assigned-positions">
-      <h2>Current Rankings</h2>
-      <div id="positionList">No rankings assigned yet</div>
-      <div id="errorMessage"></div>
+    <h2>Current Rankings</h2>
+      
+    <!--Populated list of rankings-->
+    <div id="positionList">No rankings assigned yet</div>
+    <div id="errorMessage"></div>
 
     </div>
   </main>
 <div style="margin-top: 20px;">
+  <!--Button to submit rankings-->
   <button id="submitRankingBtn">Submit Rankings</button>
 </div>
 

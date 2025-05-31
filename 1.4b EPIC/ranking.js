@@ -1,30 +1,38 @@
+// Import Supabase client
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
+// Supabase project URL and public anon key
 const SUPABASE_URL = "https://arzbecskqesqesfgmkgu.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyemJlY3NrcWVzcWVzZmdta2d1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc5Mzc3NDcsImV4cCI6MjA2MzUxMzc0N30.j_JklSlOYHuuKEIDdSkgeiemwY1lfNQMk0fRoJfb2pQ";
 
+//  Initialize Supabase client
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// Get DOM elements
 const nameList = document.getElementById('nameList');
 const errorMessage = document.getElementById('errorMessage');
 const positionList = document.getElementById('positionList');
 const residencySelect = document.getElementById('residencySelect');
 
+// State variables
 let nameItems = [];
 let assignedPositions = new Map();
 let jobs = [];
 
+// Normalize residency numbers into consistent groupings
 const groupedResidency = (res) => {
   const norm = res?.replace(/\s+/g, '').toUpperCase();
   return (norm === 'R1' || norm === 'R1+R2' || norm === 'R2+R1') ? 'R1GROUP' : norm;
 };
 
+//Log-out functionality
 document.getElementById('logout').addEventListener('click', async () => {
   await supabase.auth.signOut();
   localStorage.clear();
   window.location.href = 'index.html';
 });
 
+// Fetch all jobs from the database
 async function fetchJobs() {
   const { data, error } = await supabase.from('jobs').select('*');
   if (error) return showError('Failed to fetch job data from Supabase. ' + error.message);
@@ -32,6 +40,7 @@ async function fetchJobs() {
   initializeList();
 }
 
+// Build the job list UI
 function initializeList() {
   nameList.innerHTML = '';
   nameItems = [];
@@ -40,9 +49,11 @@ function initializeList() {
   updatePositionDisplay();
 
   jobs.forEach((job) => {
+    // Create a job item container
     const item = document.createElement('div');
     item.className = 'name-item';
 
+    // Header row: toggle and job title and input for ranking
     const header = document.createElement('div');
     header.className = 'name-header';
 
@@ -89,6 +100,7 @@ function initializeList() {
 
     nameList.appendChild(item);
 
+    // Store metadata for later use
     nameItems.push({
       element: item,
       name: job.title,
@@ -101,17 +113,20 @@ function initializeList() {
   });
 }
 
+// Toggle job description display
 function toggleDescription(button, description) {
   const isVisible = description.classList.toggle('visible');
   button.classList.toggle('rotated', isVisible);
 }
 
+// Handle ranking input changes
 function updatePositions(changedInput) {
   errorMessage.style.display = 'none';
   const newValue = changedInput.value;
   const jobId = changedInput.dataset.jobId;
   const previousValue = changedInput.dataset.previousValue;
 
+   // Remove previously assigned rank (if applicable)
   if (previousValue && assignedPositions.has(parseInt(previousValue))) {
     if (assignedPositions.get(parseInt(previousValue)) === jobId) {
       assignedPositions.delete(parseInt(previousValue));
@@ -121,6 +136,7 @@ function updatePositions(changedInput) {
     }
   }
 
+   // Add new ranking
   if (newValue !== '') {
     const positionNum = parseInt(newValue);
 
@@ -152,11 +168,13 @@ function updatePositions(changedInput) {
   sortList();
 }
 
+// Display error messages
 function showError(message) {
   errorMessage.textContent = message;
   errorMessage.style.display = 'block';
 }
 
+// Sort jobs by ranking for display
 function sortList() {
   const itemsWithPositions = nameItems.map(item => {
     const position = parseInt(item.input.value);
@@ -171,6 +189,7 @@ function sortList() {
   itemsWithPositions.forEach(item => nameList.appendChild(item.element));
 }
 
+// Update position preview box
 function updatePositionDisplay() {
   if (assignedPositions.size === 0) {
     positionList.innerHTML = '<p>No rankings assigned yet</p>';
@@ -196,6 +215,7 @@ function updatePositionDisplay() {
   positionList.innerHTML = html;
 }
 
+// Fetch available residencies to populate dropdown
 async function fetchResidencies() {
   const { data, error } = await supabase
     .from('jobs')
@@ -218,6 +238,7 @@ async function fetchResidencies() {
   });
 }
 
+// Filter jobs by selected residency
 residencySelect.addEventListener('change', () => {
   const selectedResidency = residencySelect.value;
   if (selectedResidency) {
@@ -228,6 +249,7 @@ residencySelect.addEventListener('change', () => {
   }
 });
 
+// Fetch jobs matching a specific residency
 async function fetchJobsByResidency(residency) {
   const all = await supabase.from('jobs').select('*');
   if (all.error) return showError(all.error.message);
@@ -235,6 +257,7 @@ async function fetchJobsByResidency(residency) {
   initializeList();
 }
 
+// Handle submission of rankings to Supabase
 document.getElementById('submitRankingBtn').addEventListener('click', async () => {
   const confirmSubmit = confirm("Are you sure you want to submit your rankings? This action cannot be undone.");
   if (!confirmSubmit) return;
@@ -261,6 +284,7 @@ document.getElementById('submitRankingBtn').addEventListener('click', async () =
 
   console.log("Submitting payload:", payload);
 
+  // Insert into 'ranking' table
   const { data, error } = await supabase
     .from('ranking')
     .insert([payload])
@@ -277,11 +301,12 @@ document.getElementById('submitRankingBtn').addEventListener('click', async () =
   }
 });
 
-
+// On page load, fetch jobs and residencies
 window.onload = async () => {
   await fetchResidencies();
 };
 
+// Update the student's record with the submitted ranking ID
 async function updateStudentRankingId(rankingId) {
   const {
     data: { user },
