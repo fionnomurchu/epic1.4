@@ -32,14 +32,6 @@ document.getElementById('logout').addEventListener('click', async () => {
   window.location.href = 'index.html';
 });
 
-// Fetch all jobs from the database
-async function fetchJobs() {
-  const { data, error } = await supabase.from('jobs').select('*');
-  if (error) return showError('Failed to fetch job data from Supabase. ' + error.message);
-  jobs = data;
-  initializeList();
-}
-
 // Build the job list UI
 function initializeList() {
   nameList.innerHTML = '';
@@ -64,11 +56,12 @@ function initializeList() {
     const description = document.createElement('div');
     description.className = 'description';
     description.innerHTML = `
-      <strong>Description:</strong> ${job.description || 'N/A'}<br>
       <strong>Location:</strong> ${job.location || 'N/A'}<br>
       <strong>Salary:</strong> €${job.monthly_salary || 'N/A'}<br>
       <strong>Accommodation:</strong> ${job.accommodation_support || 'N/A'}<br>
-      <strong>Special Conditions:</strong> ${job.special_conditions || 'None'}
+      <strong>Special Conditions:</strong> ${job.special_conditions || 'None'}<br>
+      <strong>Positions Available:</strong> ${job.positions_available || 'N/A'}<br>
+      <strong>Description:</strong> ${job.description || 'N/A'}<br>
     `;
 
     toggleBtn.addEventListener('click', () => toggleDescription(toggleBtn, description));
@@ -215,7 +208,7 @@ function updatePositionDisplay() {
   positionList.innerHTML = html;
 }
 
-// Fetch available residencies to populate dropdown
+// Fetch available residencies to populate dropdown in sorted order
 async function fetchResidencies() {
   const { data, error } = await supabase
     .from('jobs')
@@ -226,7 +219,17 @@ async function fetchResidencies() {
     return;
   }
 
+  // Normalize and deduplicate
   const uniqueResidencies = [...new Set(data.map(row => groupedResidency(row.residency_number)))];
+
+  // Sort R1GROUP first, then others alphabetically
+  uniqueResidencies.sort((a, b) => {
+    if (a === 'R1GROUP') return -1;
+    if (b === 'R1GROUP') return 1;
+    return a.localeCompare(b);
+  });
+
+  // Clear and repopulate dropdown
   residencySelect.innerHTML = `<option value="">-- Select Residency --</option>`;
   uniqueResidencies.forEach(res => {
     if (res) {
@@ -292,12 +295,14 @@ document.getElementById('submitRankingBtn').addEventListener('click', async () =
     .single();
 
   if (error) {
-    showError('Error submitting rankings: ' + error.message);
+    alertStyled('Error submitting rankings: ' + error.message);
   } else {
     const insertedRankingId = data.id;
     console.log('Inserted ranking ID:', insertedRankingId);
     await updateStudentRankingId(insertedRankingId);
-    window.location.reload(); // refresh after successful submission
+    alertStyled('Rankings submitted successfully!');
+    await sleep(2500); // Wait for 2.5 seconds before reloading
+    window.location.reload();
   }
 });
 
@@ -329,4 +334,16 @@ async function updateStudentRankingId(rankingId) {
   } else {
     console.log('Student ranking ID updated successfully');
   }
+}
+// Function to display an alert message styled as a notification
+function alertStyled(message) {
+  const alertBox = document.createElement('div');
+  alertBox.className = 'alert';
+  alertBox.textContent = message;
+  document.body.prepend(alertBox);
+  setTimeout(() => alertBox.remove(), 5000);
+}
+// Function to pause execution for a specified duration
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }

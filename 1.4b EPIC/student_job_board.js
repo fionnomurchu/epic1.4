@@ -94,6 +94,8 @@ function renderSection(title, jobs) {
       <h3>${job.title}</h3>
       <p><strong>Location:</strong> ${job.location || 'N/A'}</p>
       <p><strong>Salary:</strong> €${job.monthly_salary || 'N/A'}</p>
+      <p><strong>Residency Number:</strong> ${job.residency_number || 'N/A'}</p>
+      <p><strong>Contact Email:</strong> <a href="mailto:${job.contact_email}">${job.contact_email}</a></p>
       <p><strong>Accommodation:</strong> ${job.accommodation_support || 'N/A'}</p>
       <p><strong>Special Conditions:</strong> ${job.special_conditions || 'None'}</p>
       <p><strong>Positions Available:</strong> ${job.number_of_positions || 'N/A'}</p>
