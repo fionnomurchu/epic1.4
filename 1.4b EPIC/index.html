@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!--Metadata for the HTML document-->
   <meta charset="UTF-8" />
   <title>ISE Residency Login</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  
+  <!--Login section-->
   <h1>ISE Residency Login</h1>
   <h2>Login</h2>
   <form id="login-form">
+  
+    <!--Role selection-->
     <label for="role">Role:</label>
     <select id="role">
       <option value="select role">Select Role</option>
@@ -16,20 +21,32 @@
       <option value="company">Company</option>
       <option value="admin">Admin</option>
     </select>
+
+    <!-- Email and password inputs for login -->
     <label for="email">Email:</label>
     <input type="email" id="email" placeholder="Email" required />
+    
     <label for="password">Password:</label>
     <input type="password" id="password" placeholder="Password" required />
+   
+    <!-- Submit button for login form -->
     <button type="submit">Login</button>
   </form>
+
+  <!--Register section-->
+  <h3>Don't have an account?</h3>
   <h2>Register</h2>
-<form id="register-form">
+ 
+  <form id="register-form">
+  <!-- Role selection dropdown for registration-->
   <label for="reg-role">Role:</label>
   <select id="reg-role">
     <option value="select role">Select Role</option>
     <option value="student">Student</option>
     <option value="company">Company</option>
   </select>
+
+   <!-- Student registration fields (initially hidden) -->
   <div id="student-fields" style="display: none;">
     <label>Name: <input type="text" id="student-name" placeholder="First + Last name"/></label>
     <label>Student ID: <input type="text" id="student-id" /></label>
@@ -37,13 +54,19 @@
     <label>Email: <input type="email" id="student-email" placeholder="example@studentmail.ul.ie"/></label>
     <label>Password: <input type="password" id="student-password" /></label>
   </div>
+
+   <!-- Student registration fields (initially hidden) -->
   <div id="company-fields" style="display: none;">
     <label>Company Name: <input type="text" id="company-name" /></label>
     <label>Email: <input type="email" id="company-email" /></label>
     <label>Password: <input type="password" id="company-password" /></label>
   </div>
+
+  <!-- Submit button for registration form -->
   <button type="submit">Register</button>
 </form>
+
+  <!-- Linking the JavaScript module file -->
   <script type="module" src="main.js"></script>
 </body>
 </html>
