@@ -52,11 +52,19 @@ console.log('Job data:', job); // Debug output
   for(var i = 0;i<job.length; i++){
   //fetches interview slots for each job
   //handles 3 interview slots per job
+
+  if (!job[i].interview_id) {
+    console.warn(`Skipping job ${job[i].title} due to missing interview_id`);
+    continue;
+  }
+
+
   const { data: interview, error: interviewError } = await supabase
     .from('companyInterview')
     .select('*')
     .eq('id', job[i].interview_id)
     .single();
+    console.log('Job title:', job[i].title); // Debug output
 console.log('Interview data:', interview); // Debug output
 
   if (interviewError || !interview) {
@@ -69,6 +77,12 @@ const studentIds = [
   interview.interview1,
   interview.interview2,
   interview.interview3,
+  interview.interview4,
+  interview.interview5,
+  interview.interview6,
+  interview.interview7,
+  interview.interview8,
+  interview.interview9,
 ];
 
 //gets names for all interviewed students
@@ -94,21 +108,33 @@ students.forEach(student => {
 
 // Build the final object
 const interviewNameMap = {
-  interview1: idToNameMap[interview.interview1] || 'Not Found',
-  interview2: idToNameMap[interview.interview2] || 'Not Found',
-  interview3: idToNameMap[interview.interview3] || 'Not Found',
+  interview1: idToNameMap[interview.interview1] || null,
+  interview2: idToNameMap[interview.interview2] || null,
+  interview3: idToNameMap[interview.interview3] || null,
+  interview4: idToNameMap[interview.interview4] || null,
+  interview5: idToNameMap[interview.interview5] || null,
+  interview6: idToNameMap[interview.interview6] || null,
+  interview7: idToNameMap[interview.interview7] || null,
+  interview8: idToNameMap[interview.interview8] || null,
+  interview9: idToNameMap[interview.interview9] || null,
 };
 
 const interviewIdMap = {
   interview1: interview.interview1,
   interview2: interview.interview2,
   interview3: interview.interview3,
+  interview4: interview.interview4,
+  interview5: interview.interview5,
+  interview6: interview.interview6,
+  interview7: interview.interview7,
+  interview8: interview.interview8,
+  interview9: interview.interview9,
 };
 
 
 
 
-console.log('Interview name map:', interviewNameMap);
+  console.log('Interview name map:', interviewNameMap);
 
 
 
@@ -122,7 +148,7 @@ const interviewGroups = []; // Stores all interview groups
 //creates interactive interview cards
 //allows selection of one candidate per job
 //groups interviews by job title
-function renderInterviewGroup(interviewNameMap,interviewIdMap, container, jobtitle) {
+function renderInterviewGroup(interviewNameMap, interviewIdMap, container, jobtitle) {
   const groupDiv = document.createElement('div');
   groupDiv.className = 'interview-group';
 
@@ -130,31 +156,47 @@ function renderInterviewGroup(interviewNameMap,interviewIdMap, container, jobtit
   title.textContent = jobtitle;
   groupDiv.appendChild(title);
 
+  const buttons = [];
+
   function createSelectableButton(label, studentId) {
     const button = document.createElement('button');
     button.className = 'interview-card';
     button.textContent = label;
-    button.dataset.studentId = studentId; // Store the actual student ID
-
+    button.dataset.studentId = studentId;
 
     button.addEventListener('click', () => {
-      const buttons = groupDiv.querySelectorAll('.interview-card');
-      buttons.forEach(btn => btn.classList.remove('selected'));
-      button.classList.add('selected');
+      const selectedButtons = buttons.filter(btn => btn.classList.contains('selected'));
+      let maxSelectable = 1;
+      const totalButtons = buttons.length;
+
+      if (totalButtons > 6) {
+        maxSelectable = 3;
+      } else if (totalButtons > 3) {
+        maxSelectable = 2;
+      }
+
+      if (button.classList.contains('selected')) {
+        button.classList.remove('selected'); // Deselect
+      } else if (selectedButtons.length < maxSelectable) {
+        button.classList.add('selected'); // Select
+      } else {
+        alert(`You can only select up to ${maxSelectable} students for this job.`);
+      }
     });
 
     return button;
   }
 
   // Create and append buttons
-
-
-  ['interview1', 'interview2', 'interview3'].forEach(key => {
-  const name = interviewNameMap[key];
-  const id = interviewIdMap[key];
-  if (name && id) {
-    groupDiv.appendChild(createSelectableButton(name, id));
-  }
+  const keys = ['interview1', 'interview2', 'interview3', 'interview4', 'interview5', 'interview6', 'interview7', 'interview8', 'interview9'];
+  keys.forEach(key => {
+    const name = interviewNameMap[key];
+    const id = interviewIdMap[key];
+    if (name && id) {
+      const btn = createSelectableButton(name, id);
+      buttons.push(btn);
+      groupDiv.appendChild(btn);
+    }
   });
 
   container.appendChild(groupDiv);
@@ -171,18 +213,17 @@ submitButton.addEventListener('click', () => {
   const results = [];
 
   interviewGroups.forEach(({ jobtitle, groupDiv }) => {
-    const selected = groupDiv.querySelector('.interview-card.selected');
-    results.push({
-      jobtitle,
-selected: selected ? selected.dataset.studentId : null
-
+    const selected = groupDiv.querySelectorAll('.interview-card.selected');
+    selected.forEach(sel => {
+      results.push({
+        jobtitle,
+        selected: sel.dataset.studentId
+      });
     });
   });
 
   console.log('Selected Interviews:', results);
-  // You can now send `results` to a server, show a summary, etc.
- insertInterviewSelections(results);
-
+  insertInterviewSelections(results);
 });
 
 document.getElementById('submit-button').appendChild(submitButton);
