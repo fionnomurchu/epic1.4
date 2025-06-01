@@ -195,9 +195,11 @@ function displayOfferButtons(offers, container,student) {
       alert('Submission failed. Please try again.');
     } else {
       console.log('Submitted:', data);
-      alert('Offer submitted successfully!');
+      alertStyled('Offer submitted successfully!');
       submitBtn.disabled = true;
       submitBtn.textContent = 'Submitted';
+      await sleep(2500); // Wait for 2.5 seconds before reloading
+      window.location.reload();
     }
 
 const { data: rejected, error: jobsError } = await supabase
@@ -249,3 +251,14 @@ document.getElementById('logout').addEventListener('click', async () => {
   localStorage.clear()
   window.location.href = 'index.html'
 })
+
+function alertStyled(message) {
+  const alertBox = document.createElement('div');
+  alertBox.className = 'alert';
+  alertBox.textContent = message;
+  document.body.prepend(alertBox);
+  setTimeout(() => alertBox.remove(), 5000);
+}
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
