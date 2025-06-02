@@ -323,11 +323,11 @@ async function loadSelectedStudents(companyId) {
 
     //Style based on accepted status
     if (offer.accepted === true) {
-      div.style.backgroundColor = '#d4edda'; // Green
+      div.style.backgroundColor = 'rgba(19, 206, 0, 0.8)'; // Green
       div.style.border = '1px solid #28a745';
       div.style.color = '#000000';
     } else if (offer.accepted === false) {
-      div.style.backgroundColor = '#f8d7da'; // Red
+      div.style.backgroundColor = 'rgba(206, 0, 0, 0.8)'; // Red
       div.style.border = '1px solid #dc3545';
       div.style.color = '#000000';
     } else {
