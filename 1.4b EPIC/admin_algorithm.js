@@ -397,3 +397,10 @@ async function handleUnderfilledResidencies() {
 
     return true;
   }
+ 
+//Log-out functionality
+document.getElementById('logout').addEventListener('click', async () => {
+  await supabase.auth.signOut();
+  localStorage.clear();
+  window.location.href = 'index.html';
+});
