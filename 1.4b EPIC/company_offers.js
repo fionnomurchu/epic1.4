@@ -6,6 +6,9 @@ const supabaseUrl = 'https://arzbecskqesqesfgmkgu.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyemJlY3NrcWVzcWVzZmdta2d1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc5Mzc3NDcsImV4cCI6MjA2MzUxMzc0N30.j_JklSlOYHuuKEIDdSkgeiemwY1lfNQMk0fRoJfb2pQ';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+const interviewGroups = []; // Stores all interview groups
+
+
 
   const container = document.getElementById('interview-list');
 
@@ -13,7 +16,6 @@ const supabase = createClient(supabaseUrl, supabaseKey);
   const { data: { user }, error: userError } = await supabase.auth.getUser();
   if (userError || !user) {
     container.innerHTML = '<p>Error: No user logged in.</p>';
-    return;
   }
 
   //get the company record based on user email
@@ -27,11 +29,10 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
   if (companyError || !company) {
     container.innerHTML = '<p>Error: Company profile not found.</p>';
-    return;
   }
 
-  loadSelectedStudents(company.id);
-  
+  await loadSelectedStudents(company.id);
+
 
   // Get all jobs for that company that have offers set to false
   const { data: job, error: jobError } = await supabase
@@ -46,7 +47,6 @@ console.log('Job data:', job); // Debug output
 
   if (companyError || !company) {
     container.innerHTML = '<p>Error: Company profile not found.</p>';
-    return;
   }
 
   for(var i = 0;i<job.length; i++){
@@ -69,7 +69,6 @@ console.log('Interview data:', interview); // Debug output
 
   if (interviewError || !interview) {
     container.innerHTML = '<p>No interview data found.</p>';
-    return;
   }
 
   
@@ -94,7 +93,6 @@ const { data: students, error: studentError } = await supabase
 
 if (studentError || !students) {
   console.error('Error fetching student names:', studentError);
-  return;
 }
 console.log('Students data:', students); // Debug output
 
@@ -144,7 +142,6 @@ const interviewIdMap = {
   }
 
 
-const interviewGroups = []; // Stores all interview groups
 //creates interactive interview cards
 //allows selection of one candidate per job
 //groups interviews by job title
