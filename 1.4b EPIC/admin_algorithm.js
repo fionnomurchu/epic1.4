@@ -6,7 +6,10 @@
   const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyemJlY3NrcWVzcWVzZmdta2d1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc5Mzc3NDcsImV4cCI6MjA2MzUxMzc0N30.j_JklSlOYHuuKEIDdSkgeiemwY1lfNQMk0fRoJfb2pQ';
   const supabase = createClient(supabaseUrl, supabaseKey)
 
+  //initialize residency array
   let array = [];
+
+
 //map residencies to year values
   const residencyMap = {
     "R1, R1+R2": 1,
@@ -17,30 +20,39 @@
   };
 
 //listens for click event
-//sets text to "Running algorithm"
 //retrieve selected value from drop down
-//converts dropdown value to numerical value
   document.getElementById('run-algo').addEventListener('click', async () => {
+
+//sets text to "Running algorithm"
     document.getElementById('algo-status').textContent = 'Running algorithm...';
-      const select = document.getElementById('residency-filter');
+      
+    //converts dropdown value to numerical value
+    const select = document.getElementById('residency-filter');
     const selectedValue = select.value;
     const year = residencyMap[selectedValue];
-  console.log(selectedValue);  
-  console.log(year);
+  
+  
+  //debugging output
+    console.log(selectedValue);  
+    console.log(year);
     
-    
+  //begin algorithm  
     try {
       await runAlgorithm(selectedValue, year);
+      //once algorithm is done, set text to ..
       document.getElementById('algo-status').textContent = 'Algorithm completed successfully!';
     } catch (error) {
+      //if error occurs, set text to ...
       document.getElementById('algo-status').textContent = 'An error occurred while running the algorithm.';
+      // Log the error to the console for debugging
       console.error('Algorithm error:', error);
     }
   });
 
 
-
+//main algorithm function
   async function runAlgorithm(residency_number, year) {
+  //calls function to create residency array
     await fetchResidencyTable(residency_number);
 
 //fetch from students table
@@ -62,7 +74,7 @@
   }
     console.log('Fetched students:', students); // Debug output
 
-
+//loop throup each student in order of class rank and process them
     for (const student of students) {
       await processStudent(student);
     }
@@ -70,53 +82,81 @@
     await handleUnderfilledResidencies();  // <-- handles leftovers
   }
 
+
+
+
   //fetches data from db + formats it into array for matching algorithm
   async function fetchResidencyTable(residency_number) {
+    //gets all residencies from jobs table where residency_number matches
     const { data, error } = await supabase
       .from('jobs')
       .select('*')
       .eq('residency_number', residency_number);
 
+    //if error occurs, log it and return
     if (error) {
       console.error('Error fetching residencies:', error);
       return;
     }
-//each residency becomes an array of 8 elements
+
+    //each residency becomes an array of 8 elements, leaves 0's at the end for count and student IDs
     array = data.map(row => [row.id, row.title, row.residency_number, row.number_of_positions,0,0,0,0,0,0,0,0,0,0]);
     console.log('Residency table fetched:', array);
   }
 
+
+
+
+
+
+//returns true if residency exists in array
   function residencyExists(residencyName) {
     return array.some(row => row[1] === residencyName);
   }
+
 
   function residencyIndex(residencyName) {
     return array.findIndex(row => row[1] === residencyName);
   }
 
+
   async function processStudent(student) {
+    
+    //count for number of interviews each student has
     let alloc_count = 0;
-//loop through students top 3 rankings
+
 //get students i-th choice
 //if placement fails, move to rank i+1
 
+
     for (let i = 1; alloc_count < 3; i++) {
+      
+      
       const rankKey = `rank${i}`;
+      // gets student's residency rank for the current iteration
       const residency = student.ranking[rankKey];
+
+      //debugging output
       console.log(`Processing student: ${student.name}, Residency: ${residency}`);
+      
       //skip if no residency exists for this rank
       if (!residency) continue;
-      //skip if residency program !exist
+
+      //skip if residency found doesnt exist in the array
       const exists = residencyExists(residency);
       console.log(`Residency exists: ${exists}`);
       if (!exists) continue;
 
 
-      //problem here
+      //returns index of residency in array
       const index = residencyIndex(residency);
+
+      //increses count for that residency by one
       array[index][4] += 1;
       const count = array[index][4];
       console.log(`Current count for ${residency}: ${count}`);
+      
+      
       if (count == 1) {
         array[index][5] = student.student_id
         console.log(`First allocation for ${residency}: ${array[index][5]}`);
@@ -161,6 +201,9 @@
 
 
 
+
+
+
       //create interviews if residency is full and increase alloc_count to show students been allocated a place
       if (count <= array[index][3]*3) {
         console.log('manipulating')
@@ -169,8 +212,6 @@
       }
     }
   }
-
-
 
 
 
@@ -200,28 +241,30 @@ const interviews = interview.map(value => value === 0 ? null : value);
     console.error("Error inserting interviews:", error);
     return null;
   }
+
 //extracts auto generated id from new record
-//updates corresponding job preference w interview
   const insertedId = data[0]?.id;
   console.log("Inserted row ID:", insertedId);
-await updateStudentInterview( jobtitle,insertedId)
+  //calls function to update jobs table with new interview_id
+await updateCompanyInterview( jobtitle,insertedId)
   return data;
 }
 
 
 
-async function updateStudentInterview(jobtitle, interviewId) {
+async function updateCompanyInterview(jobtitle, interviewId) {
+  
   //prevents null values that would corrupt relationships
   if (!jobtitle || interviewId === undefined) {
     throw new Error("Both jobtitle and interviewId must be provided.");
   }
-//set interview_id as FK
+
 //target specific residency by title
   const { data, error } = await supabase
     .from('jobs')
     .update({ interview_id: interviewId })
     .eq('title', jobtitle)
-    .select(); // optional: returns updated row
+    .select(); //returns updated row
 
   if (error) {
     console.error("Error updating interview_id:", error);
@@ -232,10 +275,11 @@ async function updateStudentInterview(jobtitle, interviewId) {
 }
 
 
+
   async function manipulate(table, studentnum, res) {
     //verify if student already has interview record
-    //if it doesnt, create new record
     const exists = await attributeExists(table, 'id', studentnum);
+    
     if (exists) {
       const isNull = await isAttributeNull(table, 'id', studentnum, 'interview2');
       if (isNull) {
@@ -244,12 +288,16 @@ async function updateStudentInterview(jobtitle, interviewId) {
       } else {
         //find interview 3 slot and update based on algorithm
         await updateAttribute(table, 'id', studentnum, 'interview3', res);
+        //sets student interview id to their student number
         await updateAttribute('students', 'student_id', studentnum, 'interviewid', studentnum);
       }
     } else {
+      //if no interview record exists, create one and add interview1
       await addEntity(table, studentnum, res);
     }
   }
+
+
 
   async function attributeExists(tableName, columnName, valueToMatch) {
     //queries only one specified column
@@ -269,7 +317,8 @@ async function updateStudentInterview(jobtitle, interviewId) {
   }
 
 async function isAttributeNull(table, key, value, attribute) {
-    const { data, error } = await supabase
+    
+  const { data, error } = await supabase
       .from(table)
       .select(attribute)
       .eq(key, value)
@@ -297,8 +346,12 @@ async function isAttributeNull(table, key, value, attribute) {
     return true;
   }
 
+
+
 async function handleUnderfilledResidencies() {
+
   for (let i = 0; i < array.length; i++) {
+    
     const count = array[i][4];              // Number of allocated students
     const capacity = array[i][3] * 3;       // Max slots
     const residencyName = array[i][1];
@@ -306,9 +359,9 @@ async function handleUnderfilledResidencies() {
     if (count > 0 && count < capacity) {
       console.log(`Residency ${residencyName} underfilled with ${count} slots filled.`);
 
-      // Get the last 6 elements for interview student IDs
-      const last3 = array[i].slice(-9);
-      await insertInterviews(last3, residencyName);
+      // Get the last 9 elements for interview student IDs
+      const last9 = array[i].slice(-9);
+      await insertInterviews(last9, residencyName);
     }
   }
 }
@@ -316,6 +369,7 @@ async function handleUnderfilledResidencies() {
 
   //updates specific attribute in any table where a matching column has specified value
   async function updateAttribute(table, matchColumn, matchValue, attribute, newValue) {
+    
     const { data, error } = await supabase
       .from(table)
       .update({ [attribute]: newValue })
