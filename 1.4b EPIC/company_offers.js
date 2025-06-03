@@ -30,10 +30,8 @@ const supabase = createClient(supabaseUrl, supabaseKey);
     return;
   }
 
-  load();
-  async function load(){
-  await loadSelectedStudents(company.id);
-  }
+  loadSelectedStudents(company.id);
+  
 
   // Get all jobs for that company that have offers set to false
   const { data: job, error: jobError } = await supabase
