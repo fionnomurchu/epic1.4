@@ -60,7 +60,7 @@ function initializeList() {
       <strong>Salary:</strong> €${job.monthly_salary || 'N/A'}<br>
       <strong>Accommodation:</strong> ${job.accommodation_support || 'N/A'}<br>
       <strong>Special Conditions:</strong> ${job.special_conditions || 'None'}<br>
-      <strong>Positions Available:</strong> ${job.positions_available || 'N/A'}<br>
+      <strong>Positions Available:</strong> ${job.number_of_positions || 'N/A'}<br>
       <strong>Description:</strong> ${job.description || 'N/A'}<br>
     `;
 
