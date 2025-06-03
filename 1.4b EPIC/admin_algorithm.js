@@ -14,7 +14,7 @@
   const residencyMap = {
     "R1, R1+R2": 1,
     "R2": 2,
-    "R3": 3,
+    "R3": 2,
     "R4": 3,
     "R5": 4
   };
@@ -76,7 +76,13 @@
 
 //loop throup each student in order of class rank and process them
     for (const student of students) {
-      await processStudent(student);
+      try {
+      await processStudent(student);  
+      } catch (error) {
+        console.error(`Error processing student ${student.name}:`, error);
+      }
+      
+    
     }
 
     await handleUnderfilledResidencies();  // <-- handles leftovers
@@ -150,49 +156,58 @@
 
       //returns index of residency in array
       const index = residencyIndex(residency);
-
-      //increses count for that residency by one
-      array[index][4] += 1;
       const count = array[index][4];
       console.log(`Current count for ${residency}: ${count}`);
       
       
-      if (count == 1) {
+      if (count == 0) {
         array[index][5] = student.student_id
         console.log(`First allocation for ${residency}: ${array[index][5]}`);
-      }else if (count == 2) {
+      array[index][4] += 1;
+      }else if (count == 1) {
       array[index][6] = student.student_id;
         console.log(`Second allocation for ${residency}: ${array[index][6]}`);
-      }else if (count == 3) {
+            array[index][4] += 1;
+      }else if (count == 2) {
         array[index][7] = student.student_id;
         console.log(`Third allocation for ${residency}: ${array[index][7]}`);
-      if(array[index][3] ==1){
+            array[index][4] += 1;
+        if(array[index][3] ==1){
         const last3 = array[index].slice(-9);
       await insertInterviews(last3,array[index][1]);
       }
-      }else if (count == 4) {
+      }else if (count == 3) {
         array[index][8] = student.student_id
         console.log(`4th allocation for ${residency}: ${array[index][8]}`);
-      }else if (count == 5) {
+            array[index][4] += 1;
+      }else if (count == 4) {
       array[index][9] = student.student_id;
         console.log(`5th allocation for ${residency}: ${array[index][9]}`);
-      }else if (count == 6) {
+       array[index][4] += 1;
+      }else if (count == 5) {
         array[index][10] = student.student_id;
         console.log(`6th allocation for ${residency}: ${array[index][10]}`);
-      if(array[index][3] ==2){
+            array[index][4] += 1;
+        if(array[index][3] ==2){
         const last3 = array[index].slice(-9);
       await insertInterviews(last3,array[index][1]);
       }
-    }else if (count == 7) {
+    }else if (count == 6) {
       array[index][11] = student.student_id;
         console.log(`7th allocation for ${residency}: ${array[index][11]}`);
-      }else if (count == 8) {
+            array[index][4] += 1;
+
+      }else if (count == 7) {
       array[index][12] = student.student_id;
         console.log(`8th allocation for ${residency}: ${array[index][12]}`);
-      }else if (count == 9) {
+      array[index][4] += 1;
+
+      }else if (count == 8) {
         array[index][13] = student.student_id;
         console.log(`9th allocation for ${residency}: ${array[index][13]}`);
-      if(array[index][13] ==3){
+      array[index][4] += 1;
+
+        if(array[index][13] ==3){
         const last3 = array[index].slice(-9);
       await insertInterviews(last3,array[index][1]);
       }
