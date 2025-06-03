@@ -8,7 +8,7 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 //  Initialize Supabase client
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Get DOM elements
+// Get DOM elements from html file
 const nameList = document.getElementById('nameList');
 const errorMessage = document.getElementById('errorMessage');
 const positionList = document.getElementById('positionList');
@@ -65,11 +65,13 @@ function initializeList() {
     `;
 
     toggleBtn.addEventListener('click', () => toggleDescription(toggleBtn, description));
-
+    
+    //job title headings
     const nameHeading = document.createElement('h3');
     nameHeading.className = 'name-text';
     nameHeading.textContent = job.title;
 
+    //box beside job titles
     const input = document.createElement('input');
     input.type = 'number';
     input.className = 'position-input';
@@ -132,7 +134,7 @@ function updatePositions(changedInput) {
    // Add new ranking
   if (newValue !== '') {
     const positionNum = parseInt(newValue);
-
+//validate to see if positive number
     if (isNaN(positionNum) || positionNum < 1) {
       showError("Please enter a positive number");
       changedInput.value = '';
@@ -140,19 +142,21 @@ function updatePositions(changedInput) {
       updatePositionDisplay();
       return;
     }
-
+    //ensures rank isnt already assigned
     if (assignedPositions.has(positionNum)) {
       changedInput.value = previousValue || '';
       showError(`Rank ${positionNum} is already assigned to another job.`);
       return;
     }
-
+    //stores new rank in assigned positions map
     assignedPositions.set(positionNum, jobId);
+    //updates inputs previous value to new value
     changedInput.dataset.previousValue = newValue;
-
+ 
     nameItems.forEach(item => {
       if (item.id === jobId) item.element.classList.add('highlight');
     });
+    //reset previous value if cleared
   } else {
     changedInput.dataset.previousValue = '';
   }
@@ -161,7 +165,7 @@ function updatePositions(changedInput) {
   sortList();
 }
 
-// Display error messages
+// Display error messages, block sets display to visible
 function showError(message) {
   errorMessage.textContent = message;
   errorMessage.style.display = 'block';
@@ -178,6 +182,7 @@ function sortList() {
   });
 
   itemsWithPositions.sort((a, b) => a.position - b.position);
+  //rebuild UI
   nameList.innerHTML = '';
   itemsWithPositions.forEach(item => nameList.appendChild(item.element));
 }
@@ -194,6 +199,7 @@ function updatePositionDisplay() {
   let html = '<div>';
   sortedPositions.forEach(([position, jobId]) => {
     const job = jobs.find(j => j.id === jobId);
+    //store job metadata for when submitting to the server
     html += `
       <div class="position-item" 
            data-job-id="${jobId}" 
