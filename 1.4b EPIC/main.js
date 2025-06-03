@@ -23,7 +23,7 @@ document.getElementById('login-form')?.addEventListener('submit', async (e) => {
   });
 
   if (loginError) {
-    alert('Login failed: ' + loginError.message);
+    alertStyled('Login failed: ' + loginError.message);
     return;
   }
 
@@ -36,7 +36,7 @@ document.getElementById('login-form')?.addEventListener('submit', async (e) => {
       .single(); // Expect exactly one match
 
     if (error || !student) {
-      alert('Student profile not found.');
+      alertStyled('Student profile not found.');
       return;
     }
 
@@ -52,7 +52,7 @@ document.getElementById('login-form')?.addEventListener('submit', async (e) => {
       .single();
 
     if (error || !company) {
-      alert('Company profile not found.');
+      alertStyled('Company profile not found.');
       return;
     }
 
@@ -67,7 +67,7 @@ document.getElementById('login-form')?.addEventListener('submit', async (e) => {
       .single();
 
     if (error || !admin) {
-      alert('Admin profile not found.');
+      alertStyled('Admin profile not found.');
       return;
     }
 
@@ -95,7 +95,7 @@ document.getElementById('register-form')?.addEventListener('submit', async (e) =
 
     // Sign up the student using Supabase Auth
     const { data, error } = await supabase.auth.signUp({ email, password });
-    if (error) return alert('Registration failed: ' + error.message);
+    if (error) return alertStyled('Registration failed: ' + error.message);
 
     // Insert student details into 'students' table
     const { error: insertError } = await supabase.from('students').insert({
@@ -105,8 +105,8 @@ document.getElementById('register-form')?.addEventListener('submit', async (e) =
       email
     });
 
-    if (insertError) return alert('Failed to save student profile: ' + insertError.message);
-    alert('Student registered successfully!');
+    if (insertError) return alertStyled('Failed to save student profile: ' + insertError.message);
+    alertStyled('Student registered successfully!');
 
   } else if (role === 'company') {
     // Extract company credentials
@@ -123,7 +123,15 @@ document.getElementById('register-form')?.addEventListener('submit', async (e) =
       email
     });
 
-    if (insertError) return alert('Failed to save company profile: ' + insertError.message);
-    alert('Company registered successfully!');
+    if (insertError) return alertStyled('Failed to save company profile: ' + insertError.message);
+    alertStyled('Company registered successfully!');
   }
 });
+
+function alertStyled(message) {
+  const alertBox = document.createElement('div');
+  alertBox.className = 'alert';
+  alertBox.textContent = message;
+  document.body.prepend(alertBox);
+  setTimeout(() => alertBox.remove(), 5000);
+}
