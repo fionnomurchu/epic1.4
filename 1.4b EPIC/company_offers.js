@@ -6,7 +6,7 @@ const supabaseUrl = 'https://arzbecskqesqesfgmkgu.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyemJlY3NrcWVzcWVzZmdta2d1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc5Mzc3NDcsImV4cCI6MjA2MzUxMzc0N30.j_JklSlOYHuuKEIDdSkgeiemwY1lfNQMk0fRoJfb2pQ';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-window.addEventListener('DOMContentLoaded', async () => {
+
   const container = document.getElementById('interview-list');
 
   //verifies logged in user
@@ -30,8 +30,10 @@ window.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
+  load();
+  async function load(){
   await loadSelectedStudents(company.id);
-
+  }
 
   // Get all jobs for that company that have offers set to false
   const { data: job, error: jobError } = await supabase
@@ -142,7 +144,7 @@ const interviewIdMap = {
   renderInterviewGroup(interviewNameMap,interviewIdMap, container, job[i].title);
 
   }
-});
+
 
 const interviewGroups = []; // Stores all interview groups
 //creates interactive interview cards
