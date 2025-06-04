@@ -1,25 +1,32 @@
 // Import Supabase client
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-// Supabase project URL and public anon key
+
+//anon key=JWT(authenticates app for accessing db w public permissions)
 const SUPABASE_URL = "https://arzbecskqesqesfgmkgu.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyemJlY3NrcWVzcWVzZmdta2d1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc5Mzc3NDcsImV4cCI6MjA2MzUxMzc0N30.j_JklSlOYHuuKEIDdSkgeiemwY1lfNQMk0fRoJfb2pQ";
 
-//  Initialize Supabase client
+//create Supabase client instance to interact w Supabase backend
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Get DOM elements from html file
+//jobs
 const nameList = document.getElementById('nameList');
 const errorMessage = document.getElementById('errorMessage');
+//track rankings
 const positionList = document.getElementById('positionList');
+//dropdown selection
 const residencySelect = document.getElementById('residencySelect');
 
 // State variables
+//metadata
 let nameItems = [];
+//mao to preserve insertion order
 let assignedPositions = new Map();
+//holds complete list of jobs from db
 let jobs = [];
 
-// Normalize residency numbers into consistent groupings
+//normalize residency numbers into consistent groupings
 const groupedResidency = (res) => {
   const norm = res?.replace(/\s+/g, '').toUpperCase();
   return (norm === 'R1' || norm === 'R1+R2' || norm === 'R2+R1') ? 'R1GROUP' : norm;
@@ -51,6 +58,7 @@ function initializeList() {
 
     const toggleBtn = document.createElement('button');
     toggleBtn.className = 'toggle-description';
+    //unicode for >
     toggleBtn.innerHTML = '&#9654;';
 
     const description = document.createElement('div');
@@ -131,7 +139,7 @@ function updatePositions(changedInput) {
     }
   }
 
-   // Add new ranking
+   //add new ranking
   if (newValue !== '') {
     const positionNum = parseInt(newValue);
 //validate to see if positive number
@@ -172,6 +180,7 @@ function showError(message) {
 }
 
 // Sort jobs by ranking for display
+//called after any rank is input
 function sortList() {
   const itemsWithPositions = nameItems.map(item => {
     const position = parseInt(item.input.value);
@@ -183,7 +192,9 @@ function sortList() {
 
   itemsWithPositions.sort((a, b) => a.position - b.position);
   //rebuild UI
+  //clear current list
   nameList.innerHTML = '';
+  //re add each job
   itemsWithPositions.forEach(item => nameList.appendChild(item.element));
 }
 
@@ -210,7 +221,9 @@ function updatePositionDisplay() {
       </div>
     `;
   });
+  //end html string
   html += '</div>';
+  //renders complete html block
   positionList.innerHTML = html;
 }
 
@@ -237,6 +250,7 @@ async function fetchResidencies() {
 
   // Clear and repopulate dropdown
   residencySelect.innerHTML = `<option value="">-- Select Residency --</option>`;
+  //loop through each residency & create option for each
   uniqueResidencies.forEach(res => {
     if (res) {
       const option = document.createElement('option');
