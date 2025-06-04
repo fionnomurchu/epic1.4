@@ -206,7 +206,7 @@
         array[index][13] = student.student_id;
         console.log(`9th allocation for ${residency}: ${array[index][13]}: `);
       array[index][4] += 1;
-
+      console.log(`array[index][3]: ${array[index][3]}`);
         if(array[index][3] ==3){
         console.log(`Inserting interviews for ${residency}`);
         const last3 = array[index].slice(-9);
