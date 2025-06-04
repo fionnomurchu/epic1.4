@@ -156,6 +156,17 @@ function renderOfferSection(offers, container, student) {
       return;
     }
 
+
+    const { data: rejected, error: jobsError } = await supabase
+  .from('offer')
+  .select('*')
+  .eq('student_id', student.student_id)
+    .eq('accepted',false);
+
+    await resetJobOfferStatus(rejected);
+
+
+
     alertStyled('Offer submitted successfully!');
     submitBtn.disabled = true;
     submitBtn.textContent = 'Submitted';
@@ -173,9 +184,35 @@ function alertStyled(message) {
   document.body.prepend(alertBox);
   setTimeout(() => alertBox.remove(), 5000);
 }
+
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+
+
+
+async function resetJobOfferStatus(rejected) {
+
+  console.log('in function resetJobOfferStatus');
+  // Get unique job titles from the rejected array
+  const jobTitles = [...new Set(rejected.map(item => item.job_title))];
+
+  // Loop through and update each job's `has_offer` to false
+  for (const title of jobTitles) {
+    const { error } = await supabase
+      .from('jobs')
+      .update({ has_offer: false })
+      .eq('title', title);
+
+    if (error) {
+      console.error(`Failed to update job "${title}":`, error);
+    } else {
+      console.log(`Job "${title}" updated to has_offer = false`);
+    }
+  }
+}
+
 document.getElementById('logout').addEventListener('click', async () => {
   await supabase.auth.signOut();
   localStorage.clear();
