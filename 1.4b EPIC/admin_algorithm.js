@@ -204,10 +204,11 @@
 
       }else if (count == 8) {
         array[index][13] = student.student_id;
-        console.log(`9th allocation for ${residency}: ${array[index][13]}`);
+        console.log(`9th allocation for ${residency}: ${array[index][13]}: `);
       array[index][4] += 1;
 
-        if(array[index][13] ==3){
+        if(array[index][3] ==3){
+        console.log(`Inserting interviews for ${residency}`);
         const last3 = array[index].slice(-9);
       await insertInterviews(last3,array[index][1]);
       }
